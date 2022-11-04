@@ -37,38 +37,39 @@ public class DefaultDriveCommand extends CommandBase {
         // What else to put here?
 
         // Filter out low input values to reduce drivetrain drift
-        double leftY = (Math.abs(driverController.getRawAxis(1)) < DRIVE_FILTER_VALUE) ? 0.0f : driverController.getRawAxis(1);
-        double leftX = (Math.abs(driverController.getRawAxis(0)) < DRIVE_FILTER_VALUE) ? 0.0f : driverController.getRawAxis(0);
+        double leftY = (Math.abs(driverController.getRawAxis(1)) < DRIVE_FILTER_VALUE) ? 0.0f
+                : driverController.getRawAxis(1);
+        double leftX = (Math.abs(driverController.getRawAxis(0)) < DRIVE_FILTER_VALUE) ? 0.0f
+                : driverController.getRawAxis(0);
         double leftSpeed = leftY * -1 + leftX;
         double rightSpeed = leftY * -1 - leftX;
 
         // Tank drive:
-        //	double leftY = -driverController.getRawAxis(1);
-        //	double rightY = -driverController.getRawAxis(5);
-        //	double leftT = driverController.getRawAxis(2);
-        //	double rightT = driverController.getRawAxis(3);
+        // double leftY = -driverController.getRawAxis(1);
+        // double rightY = -driverController.getRawAxis(5);
+        // double leftT = driverController.getRawAxis(2);
+        // double rightT = driverController.getRawAxis(3);
         boolean boost = false;
 
-        if (driverController.getRightBumper()){
+        if (driverController.getRightBumper()) {
             boost = true;
         }
-        //Also tank drive:
+        // Also tank drive:
         // if (leftT >0) {
-        // 	driveSubsystem.setMotorSpeeds(-leftT, leftT)
+        // driveSubsystem.setMotorSpeeds(-leftT, leftT)
         // }
         // else if (rightT >0) {
-        // 	driveSubsystem.setMotorSpeeds(rightT, -rightT);
+        // driveSubsystem.setMotorSpeeds(rightT, -rightT);
         // }
 
         if (!boost) {
-            //Not sure if this is a good speed!
+            // Not sure if this is a good speed!
             driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
         } else {
             driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
         }
 
-
-        //stops the robot
+        // stops the robot
         boolean deadStop = false;
         if (driverController.getLeftBumper()) {
             deadStop = true;
