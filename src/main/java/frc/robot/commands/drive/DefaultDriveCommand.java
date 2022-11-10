@@ -62,8 +62,6 @@ public class DefaultDriveCommand extends CommandBase {
             rightSpeed = speed;
         }
 
-        driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
-
 
         // Tank drive:
         // double leftY = -driverController.getRawAxis(1);
