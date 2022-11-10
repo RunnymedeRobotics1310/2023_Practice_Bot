@@ -37,12 +37,33 @@ public class DefaultDriveCommand extends CommandBase {
         // What else to put here?
 
         // Filter out low input values to reduce drivetrain drift
-        double leftY = (Math.abs(driverController.getRawAxis(1)) < DRIVE_FILTER_VALUE) ? 0.0f
-                : driverController.getRawAxis(1);
-        double leftX = (Math.abs(driverController.getRawAxis(0)) < DRIVE_FILTER_VALUE) ? 0.0f
-                : driverController.getRawAxis(0);
-        double leftSpeed = leftY * -1 + leftX;
-        double rightSpeed = leftY * -1 - leftX;
+        // double leftY = (Math.abs(driverController.getRawAxis(1)) < DRIVE_FILTER_VALUE) ? 0.0f
+        //         : driverController.getRawAxis(1);
+        // double leftX = (Math.abs(driverController.getRawAxis(0)) < DRIVE_FILTER_VALUE) ? 0.0f
+        //         : driverController.getRawAxis(0);
+        // double leftSpeed = leftY * -1 + leftX;
+        // double rightSpeed = leftY * -1 - leftX;
+
+        double speed = driverController.getLeftY();
+        double turn = driverController.getRightX();
+        // double leftSpeed = speed + turn;
+        // double rightSpeed = speed - turn;
+        double leftSpeed, rightSpeed;
+        if(turn < 0){
+             leftSpeed = speed + turn;
+             rightSpeed = speed;
+        }
+        else if(turn > 0){
+            leftSpeed = speed;
+            rightSpeed = speed - turn;
+        }
+        else{
+            leftSpeed = speed;
+            rightSpeed = speed;
+        }
+
+        driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
+
 
         // Tank drive:
         // double leftY = -driverController.getRawAxis(1);
