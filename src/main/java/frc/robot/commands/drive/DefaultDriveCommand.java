@@ -29,45 +29,45 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void initialize() {
     }
-
-    // Called every time the scheduler runs while the command is scheduled.
+        // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
 
         // What else to put here?
 
         // Filter out low input values to reduce drivetrain drift
-        double leftY = (Math.abs(driverController.getRawAxis(1)) < DRIVE_FILTER_VALUE) ? 0.0f
-                : driverController.getRawAxis(1);
-        double leftX = (Math.abs(driverController.getRawAxis(0)) < DRIVE_FILTER_VALUE) ? 0.0f
-                : driverController.getRawAxis(0);
-        double leftSpeed = leftY * -1 + leftX;
-        double rightSpeed = leftY * -1 - leftX;
+        // double leftY = (Math.abs(driverController.getLeftY()) < DRIVE_FILTER_VALUE) ? 0.0f
+        //         : driverController.getLeftY();
+        // double leftX = (Math.abs(driverController.getLeftX()) < DRIVE_FILTER_VALUE) ? 0.0f
+        //         : driverController.getLeftX();
+        // double leftSpeed = leftY * -1 + leftX;
+        // double rightSpeed = leftY * -1 - leftX;
 
         // Tank drive:
-        // double leftY = -driverController.getRawAxis(1);
-        // double rightY = -driverController.getRawAxis(5);
-        // double leftT = driverController.getRawAxis(2);
-        // double rightT = driverController.getRawAxis(3);
-        boolean boost = false;
+        double leftY = -driverController.getRawAxis(1);
+        double rightY = -driverController.getRawAxis(5);
+        double leftT = driverController.getRawAxis(2);
+        double rightT = driverController.getRawAxis(3);
+        
+        // boolean boost = false;
 
         if (driverController.getRightBumper()) {
-            boost = true;
+            // boost = true;
         }
-        // Also tank drive:
-        // if (leftT >0) {
-        // driveSubsystem.setMotorSpeeds(-leftT, leftT)
-        // }
-        // else if (rightT >0) {
-        // driveSubsystem.setMotorSpeeds(rightT, -rightT);
-        // }
+        // // Also tank drive:
+        if (leftT >0) {
+        driveSubsystem.setMotorSpeeds(-leftT, leftT);
+        }
+        else if (rightT >0) {
+        driveSubsystem.setMotorSpeeds(rightT, -rightT);
+        }
 
-        if (!boost) {
-            // Not sure if this is a good speed!
-            driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
-        } else {
-            driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
-        }
+        // if (!boost) {
+        //     // Not sure if this is a good speed!
+        //     driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
+        // } else {
+            driveSubsystem.setMotorSpeeds(leftY, rightY);
+        // }
 
         // stops the robot
         boolean deadStop = false;
