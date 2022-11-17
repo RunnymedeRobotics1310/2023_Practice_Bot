@@ -46,9 +46,11 @@ public class DefaultDriveCommand extends CommandBase {
 
         double speed = driverController.getLeftY();
         double turn = driverController.getRightX();
-        // double leftSpeed = speed + turn;
-        // double rightSpeed = speed - turn;
         double leftSpeed, rightSpeed;
+
+        //  leftSpeed = speed + turn;
+        //  rightSpeed = speed - turn;
+        
         if(turn < 0){
              leftSpeed = speed + turn;
              rightSpeed = speed;
