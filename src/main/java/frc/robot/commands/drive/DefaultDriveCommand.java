@@ -47,16 +47,23 @@ public class DefaultDriveCommand extends CommandBase {
 
         double speed = - driverController.getLeftY();
 
-        if (Math.abs(speed) < .1) {
+        if (Math.abs(speed) < .2) {
             speed = 0;
+        }
+        else {
+            // Scale the range of [0.2-1.0] to [0.0-1.0];
+            speed = ((Math.abs(speed) - .2) / .8) * Math.signum(speed);
         }
 
         double turn = driverController.getRightX();
 
-        if (Math.abs(turn) < .1) {
+        if (Math.abs(turn) < .2) {
             turn = 0;
         }
-
+        else {
+            // Scale the range of [0.2-1.0] to [0.0-1.0];
+            turn = ((Math.abs(turn) - .2) / .8) * Math.signum(turn);
+        }
 
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumber("Turn", turn);
