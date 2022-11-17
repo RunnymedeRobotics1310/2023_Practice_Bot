@@ -40,7 +40,7 @@ public class DefaultDriveCommand extends CommandBase {
         double leftY = (Math.abs(driverController.getLeftY()) < DRIVE_FILTER_VALUE) ? 0.0f
                 : driverController.getLeftY();
         double leftX = (Math.abs(driverController.getLeftX()) < DRIVE_FILTER_VALUE) ? 0.0f
-                : driverController.getLeftX();
+                : driverController.getLeftX(); 
         double leftSpeed = leftY * -1 + leftX;
         double rightSpeed = leftY * -1 - leftX;
 
