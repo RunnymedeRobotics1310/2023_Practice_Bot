@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -21,6 +22,8 @@ public class DriveSubsystem extends SubsystemBase {
     private double leftSpeed = 0;
     private double rightSpeed = 0;
 
+    ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+    
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
 
@@ -46,6 +49,25 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Setting both encoders to 0
         resetEncoders();
+    }
+
+    /**
+     * Gets the heading of the robot.
+     *
+     * @return heading in the range of 0 - 360 degrees
+     */
+    public double getHeading() {
+    	
+    	double gyroAngle = gyro.getAngle();
+    	
+    	// The angle can be positive or negative and extends beyond 360 degrees.
+    	double heading = gyroAngle % 360.0;
+    	
+    	if (heading < 0) {
+    		heading += 360;
+    	}
+
+    	return heading;
     }
 
     public double getDistanceInches() {
@@ -113,5 +135,9 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Left Encoder", getLeftEncoder());
 
         SmartDashboard.putNumber("Distance (inches)", getDistanceInches());
+        
+        SmartDashboard.putData("Gyro", gyro);
+        
+        SmartDashboard.putNumber("Heading", getHeading());
     }
 }
