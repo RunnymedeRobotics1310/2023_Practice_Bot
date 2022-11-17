@@ -1,6 +1,7 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -44,16 +45,31 @@ public class DefaultDriveCommand extends CommandBase {
         // double leftSpeed = leftY * -1 + leftX;
         // double rightSpeed = leftY * -1 - leftX;
 
-        double speed = driverController.getLeftY();
+        double speed = - driverController.getLeftY();
+
+        if (Math.abs(speed) < .1) {
+            speed = 0;
+        }
+
         double turn = driverController.getRightX();
+
+        if (Math.abs(turn) < .1) {
+            turn = 0;
+        }
+
+
+        SmartDashboard.putNumber("Speed", speed);
+        SmartDashboard.putNumber("Turn", turn);
+
         // double leftSpeed = speed + turn;
         // double rightSpeed = speed - turn;
         double leftSpeed, rightSpeed;
-        if(turn < 0){
+
+        if(turn > 0){
              leftSpeed = speed + turn;
              rightSpeed = speed;
         }
-        else if(turn > 0){
+        else if(turn < 0){
             leftSpeed = speed;
             rightSpeed = speed - turn;
         }
