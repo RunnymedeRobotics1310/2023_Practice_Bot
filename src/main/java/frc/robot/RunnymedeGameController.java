@@ -8,6 +8,8 @@ public class RunnymedeGameController extends XboxController {
 
     private double axisDeadband = DEFAULT_AXIS_DEADBAND;
 
+    public enum Stick {LEFT, RIGHT};
+
     public RunnymedeGameController(int port) {
         super(port);
     }
@@ -63,5 +65,55 @@ public class RunnymedeGameController extends XboxController {
      */
     public double getRawHardwareAxisValue(int axis) {
         return super.getRawAxis(axis);
+    }
+
+    /**
+     * Determine the stick angle in the range of 0-360 degrees, where zero is pointing straight up
+     * <p>
+     * If the stick is released (axes are within the deadband) then the stick angle will be -1.0d
+     * @param stick whose angle is to be retrieved.
+     * @return angle in the range 0-360, or -1.0 if the stick is not being moved
+     */
+    public double getStickAngle(Stick stick) {
+
+        double x = 0;
+        double y = 0;
+
+        switch (stick) {
+
+        case LEFT:
+            x = getLeftX();
+            y = getLeftY();
+            break;
+
+        case RIGHT:
+            x = getRightX();
+            y = getRightY();
+            break;
+        }
+
+        // If the stick is not being moved, return -1.
+        if (x == 0 && y == 0) {
+            return -1;
+        }
+
+        // NOTE: when taking the arcTan of the coordinates, positive
+        //       is counter-clockwise.  The radians away from east are
+        //       positive to the north, and negative to the south.
+        double radiansFromEast = Math.atan2(y, x);
+
+        // The desired output is relative to N, rather than relative to E.
+        double radiansFromNorth = radiansFromEast - (Math.PI/2.0d);
+
+        // Degrees are measured in the clockwise direction from 0 - 359 degrees.
+        double degreesFromNorth = 360.0d - Math.toDegrees(radiansFromNorth);
+
+        degreesFromNorth %= 360.0d;  // Modulo 360.
+
+        if (degreesFromNorth < 0) {
+            degreesFromNorth += 360;
+        }
+
+        return degreesFromNorth;
     }
 }
