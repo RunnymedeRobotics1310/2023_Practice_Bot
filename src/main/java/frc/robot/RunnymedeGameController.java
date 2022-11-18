@@ -40,11 +40,17 @@ public class RunnymedeGameController extends XboxController {
     }
 
     /**
-     * Set the axis deadband on the stick axes of this gameController
+     * Set the axis deadband on the stick and trigger axes of this gameController
      * <p>
-     * The value set applies to the x and y axis of the left and right stick,
-     * and the trigger axis values.
-     *
+     * The value set applies to the x and y axes of the left and right sticks,
+     * as well as the trigger's axes values.
+     * <p>
+     * The deadband must be set larger than the highest expected value returned
+     * from the stick axis when they are released.  A released controller axis will
+     * not always return to zero.
+     * <p>
+     * Use the method {@link #getRawHardwareAxisValue} to get the raw hardware value coming
+     * off the axis.
      * @param axisDeadband
      */
     public void setAxisDeadband(double axisDeadband) {
@@ -55,7 +61,7 @@ public class RunnymedeGameController extends XboxController {
      * Get the raw hardware axis value (unmodified by the deadband)
      * @param axis see {@link XboxController.Axis} for list of axis constants
      */
-    public double getHardwareAxisValue(int axis) {
+    public double getRawHardwareAxisValue(int axis) {
         return super.getRawAxis(axis);
     }
 }
