@@ -67,20 +67,28 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
+        // NOTE: The button bindings here are the default drive button bindings, when the
+        //       robot is in test mode, the button bindings are different.  In order to
+        //       ensure the test mode and drive mode button bindings do not conflict,
+        //       always check that the system is not in test mode and that the start
+        //       button is not being pressed before before checking the
+        //       button values and launching a command.
+
         // Test Mode
-        new Trigger(() -> !testMode)
-        .and(new Trigger(() -> driverController.getStartButton()))
+        // NOTE: To end SystemTestCommand use the Start and either the A or Y buttons.
+        new Trigger(() -> !testMode && driverController.getStartButton())
         .and(new Trigger(() -> driverController.getBackButton()))
         .whenActive(
                 new SystemTestCommand(driverController, driveSubsystem));
 
         // Field Oriented Drive
         // NOTE: To end Field Oriented Drive use the Start and A button combination
-        new Trigger(() -> !testMode)
-        .and(new Trigger(() -> driverController.getStartButton()))
+        new Trigger(() -> !testMode && driverController.getStartButton())
         .and(new Trigger(() -> driverController.getYButton()))
         .whenActive(
                 new FieldOrientedDriveCommand(driverController, driveSubsystem));
+
+
     }
 
     /**
