@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj.XboxController;
 
 public class RunnymedeGameController extends XboxController {
 
+    public static enum Stick {LEFT, RIGHT};
+
     private static double DEFAULT_AXIS_DEADBAND = .2;
 
     private double axisDeadband = DEFAULT_AXIS_DEADBAND;
-
-    public enum Stick {LEFT, RIGHT};
 
     public RunnymedeGameController(int port) {
         super(port);
@@ -36,6 +36,13 @@ public class RunnymedeGameController extends XboxController {
             value *= Math.signum(axisValue);
 
             axisValue = value;
+        }
+
+        // The Y axis values should be inverted in order to make North (away
+        // from the driver) positive.
+        if (       axis == XboxController.Axis.kLeftY.value
+                || axis == XboxController.Axis.kRightY.value) {
+            axisValue *= -1.0;
         }
 
         return axisValue;
@@ -92,14 +99,14 @@ public class RunnymedeGameController extends XboxController {
             break;
         }
 
-        // If the stick is not being moved, return -1.
-        if (x == 0 && y == 0) {
+        // If the stick is not being moved (significantly), return -1.
+        if (x < .3 && y < .3) {
             return -1;
         }
 
         // NOTE: when taking the arcTan of the coordinates, positive
-        //       is counter-clockwise.  The radians away from east are
-        //       positive to the north, and negative to the south.
+        //       is counter-clockwise away from East, with positive
+        //       to the north, and negative to the south.
         double radiansFromEast = Math.atan2(y, x);
 
         // The desired output is relative to N, rather than relative to E.

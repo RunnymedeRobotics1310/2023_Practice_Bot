@@ -9,10 +9,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OiConstants;
 import frc.robot.commands.auto.AutonomousCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
+import frc.robot.commands.drive.FieldOrientedDriveCommand;
+import frc.robot.commands.test.SystemTestCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -29,11 +32,13 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DriveSubsystem driveSubsystem = new DriveSubsystem();
 
+    private static boolean testMode = false;
+
     // A chooser for autonomous commands
     SendableChooser<String> autoChooser = new SendableChooser<>();
 
     // The driver's controller
-    private final XboxController driverController = new XboxController(OiConstants.DRIVER_CONTROLLER_PORT);
+    private final RunnymedeGameController driverController = new RunnymedeGameController(OiConstants.DRIVER_CONTROLLER_PORT);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -49,6 +54,7 @@ public class RobotContainer {
         autoChooser.addOption(AutoConstants.AUTO_PATTERN_MOVE, AutoConstants.AUTO_PATTERN_MOVE);
 
         // Configure the button bindings
+        setTestMode(false);
         configureButtonBindings();
     }
 
@@ -60,6 +66,21 @@ public class RobotContainer {
      * it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+
+        // Test Mode
+        new Trigger(() -> !testMode)
+        .and(new Trigger(() -> driverController.getStartButton()))
+        .and(new Trigger(() -> driverController.getBackButton()))
+        .whenActive(
+                new SystemTestCommand(driverController, driveSubsystem));
+
+        // Field Oriented Drive
+        // NOTE: To end Field Oriented Drive use the Start and A button combination
+        new Trigger(() -> !testMode)
+        .and(new Trigger(() -> driverController.getStartButton()))
+        .and(new Trigger(() -> driverController.getYButton()))
+        .whenActive(
+                new FieldOrientedDriveCommand(driverController, driveSubsystem));
     }
 
     /**
@@ -73,5 +94,13 @@ public class RobotContainer {
                 driveSubsystem,
                 autoChooser);
 
+    }
+
+    public static void setTestMode(boolean isTestMode) {
+
+        testMode = isTestMode;
+
+        SmartDashboard.putBoolean("Test Mode", testMode);
+        SmartDashboard.putBoolean("Driver Control", !testMode);
     }
 }
