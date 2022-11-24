@@ -22,7 +22,9 @@ public class DriveSubsystem extends SubsystemBase {
     private double leftSpeed = 0;
     private double rightSpeed = 0;
 
-    ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	private ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+    
+    private double gyroHeadingOffset = 0;
     
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
@@ -60,14 +62,61 @@ public class DriveSubsystem extends SubsystemBase {
     	
     	double gyroAngle = gyro.getAngle();
     	
+    	// subtract the offset angle that was saved when the gyro
+    	// was last rest.
+    	gyroAngle -= gyroHeadingOffset;
+    	
     	// The angle can be positive or negative and extends beyond 360 degrees.
     	double heading = gyroAngle % 360.0;
     	
     	if (heading < 0) {
     		heading += 360;
     	}
-
+    	
     	return heading;
+    }
+
+    /**
+     * Calibrate Gyro
+     * <p>
+     * This routine calibrates the gyro.  The robot must not be moved during the 
+     * calibrate routine which lasts about 10 seconds
+     */
+    public void calibrateGyro() {
+    	
+    	gyroHeadingOffset = 0;
+    	
+    	gyro.calibrate();
+    }
+
+    /**
+     * Reset Gyro
+     * <p>
+     * This routine resets the gyro angle to zero.
+     * <p>
+     * NOTE: This is not the same as calibrating the gyro. 
+     */
+    public void resetGyroHeading() {
+
+    	// Clear the current offset.
+    	gyroHeadingOffset = 0;
+    	
+    	// Set the new offset
+    	gyroHeadingOffset = getHeading();
+    }
+
+    /**
+     * Set Gyro Heading
+     * <p>
+     * This routine sets the gyro heading to a known value.
+     */
+    public void setGyroHeading(double heading) {
+    	
+    	// Clear the current offset.
+    	gyroHeadingOffset = 0;
+    	
+    	// Adjust the offset so that the heading is now the current heading.
+    	gyroHeadingOffset = getHeading() - heading;
     }
 
     public double getDistanceInches() {
@@ -137,7 +186,6 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Distance (inches)", getDistanceInches());
         
         SmartDashboard.putData("Gyro", gyro);
-        
         SmartDashboard.putNumber("Heading", getHeading());
     }
 }
