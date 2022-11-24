@@ -35,18 +35,7 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void execute() {
 
-        // What else to put here?
-
-        // Filter out low input values to reduce drivetrain drift
-        // double leftY = (Math.abs(driverController.getRawAxis(1)) < DRIVE_FILTER_VALUE) ? 0.0f
-        //         : driverController.getRawAxis(1);
-        // double leftX = (Math.abs(driverController.getRawAxis(0)) < DRIVE_FILTER_VALUE) ? 0.0f
-        //         : driverController.getRawAxis(0);
-        // double leftSpeed = leftY * -1 + leftX;
-        // double rightSpeed = leftY * -1 - leftX;
-
         double speed = - driverController.getLeftY();
-
         if (Math.abs(speed) < .2) {
             speed = 0;
         }
@@ -56,7 +45,6 @@ public class DefaultDriveCommand extends CommandBase {
         }
 
         double turn = driverController.getRightX();
-
         if (Math.abs(turn) < .2) {
             turn = 0;
         }
@@ -68,44 +56,56 @@ public class DefaultDriveCommand extends CommandBase {
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumber("Turn", turn);
 
-        // double leftSpeed = speed + turn;
-        // double rightSpeed = speed - turn;
+
         double leftSpeed, rightSpeed;
 
-        if(turn > 0){
-             leftSpeed = speed + turn;
-             rightSpeed = speed;
+        if(speed > 0){
+            if(turn > 0){
+                leftSpeed = speed + turn;
+                rightSpeed = speed;
+           }
+           else if(turn < 0){
+               leftSpeed = speed;
+               rightSpeed = speed - turn;
+           }
+           else{
+               leftSpeed = speed;
+               rightSpeed = speed;
+           }
         }
-        else if(turn < 0){
-            leftSpeed = speed;
-            rightSpeed = speed - turn;
+
+        else if(speed < 0){
+            if(turn < 0){
+                leftSpeed = speed + turn;
+                rightSpeed = speed;
+            }
+            else if(turn > 0){
+                leftSpeed = speed;
+                rightSpeed = speed - turn;
+            }
+            else{
+                leftSpeed = speed;
+                rightSpeed = speed;
+            }
         }
         else{
-            leftSpeed = speed;
-            rightSpeed = speed;
+            speed = 0;
         }
 
 
-        // Tank drive:
-        // double leftY = -driverController.getRawAxis(1);
-        // double rightY = -driverController.getRawAxis(5);
-        // double leftT = driverController.getRawAxis(2);
-        // double rightT = driverController.getRawAxis(3);
-        boolean boost = false;
 
+
+
+
+
+
+        // doubles the speed of the robot
+        boolean boost = false;
         if (driverController.getRightBumper()) {
             boost = true;
         }
-        // Also tank drive:
-        // if (leftT >0) {
-        // driveSubsystem.setMotorSpeeds(-leftT, leftT)
-        // }
-        // else if (rightT >0) {
-        // driveSubsystem.setMotorSpeeds(rightT, -rightT);
-        // }
 
         if (!boost) {
-            // Not sure if this is a good speed!
             driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
         } else {
             driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
