@@ -45,64 +45,65 @@ public class DefaultDriveCommand extends CommandBase {
         // double leftSpeed = leftY * -1 + leftX;
         // double rightSpeed = leftY * -1 - leftX;
 
-        double speed = - driverController.getLeftY();
+        //Dual Arcade Drive
+        // double speed = - driverController.getLeftY();
 
-        if (Math.abs(speed) < .2) {
-            speed = 0;
-        }
-        else {
-            // Scale the range of [0.2-1.0] to [0.0-1.0];
-            speed = ((Math.abs(speed) - .2) / .8) * Math.signum(speed);
-        }
+        // if (Math.abs(speed) < .2) {
+        //     speed = 0;
+        // }
+        // else {
+        //     // Scale the range of [0.2-1.0] to [0.0-1.0];
+        //     speed = ((Math.abs(speed) - .2) / .8) * Math.signum(speed);
+        // }
 
-        double turn = driverController.getRightX();
+        // double turn = driverController.getRightX();
 
-        if (Math.abs(turn) < .2) {
-            turn = 0;
-        }
-        else {
-            // Scale the range of [0.2-1.0] to [0.0-1.0];
-            turn = ((Math.abs(turn) - .2) / .8) * Math.signum(turn);
-        }
+        // if (Math.abs(turn) < .2) {
+        //     turn = 0;
+        // }
+        // else {
+        //     // Scale the range of [0.2-1.0] to [0.0-1.0];
+        //     turn = ((Math.abs(turn) - .2) / .8) * Math.signum(turn);
+        // }
 
-        SmartDashboard.putNumber("Speed", speed);
-        SmartDashboard.putNumber("Turn", turn);
+        // SmartDashboard.putNumber("Speed", speed);
+        // SmartDashboard.putNumber("Turn", turn);
 
-        // double leftSpeed = speed + turn;
-        // double rightSpeed = speed - turn;
-        double leftSpeed, rightSpeed;
+        // // double leftSpeed = speed + turn;
+        // // double rightSpeed = speed - turn;
+        // double leftSpeed, rightSpeed;
 
-        if(turn > 0){
-             leftSpeed = speed + turn;
-             rightSpeed = speed;
-        }
-        else if(turn < 0){
-            leftSpeed = speed;
-            rightSpeed = speed - turn;
-        }
-        else{
-            leftSpeed = speed;
-            rightSpeed = speed;
-        }
+        // if(turn > 0){
+        //      leftSpeed = speed + turn;
+        //      rightSpeed = speed;
+        // }
+        // else if(turn < 0){
+        //     leftSpeed = speed;
+        //     rightSpeed = speed - turn;
+        // }
+        // else{
+        //     leftSpeed = speed;
+        //     rightSpeed = speed;
+        // }
 
 
         // Tank drive:
-        // double leftY = -driverController.getRawAxis(1);
-        // double rightY = -driverController.getRawAxis(5);
-        // double leftT = driverController.getRawAxis(2);
-        // double rightT = driverController.getRawAxis(3);
+        double leftSpeed = -driverController.getLeftY();
+        double rightSpeed = -driverController.getRawAxis(5);
+        double leftT = driverController.getRawAxis(2);
+        double rightT = driverController.getRawAxis(3);
         boolean boost = false;
 
         if (driverController.getRightBumper()) {
             boost = true;
         }
         // Also tank drive:
-        // if (leftT >0) {
-        // driveSubsystem.setMotorSpeeds(-leftT, leftT)
-        // }
-        // else if (rightT >0) {
-        // driveSubsystem.setMotorSpeeds(rightT, -rightT);
-        // }
+        if (leftT >0) {
+        driveSubsystem.setMotorSpeeds(-leftT, leftT);
+        }
+        else if (rightT >0) {
+        driveSubsystem.setMotorSpeeds(rightT, -rightT);
+        }
 
         if (!boost) {
             // Not sure if this is a good speed!
