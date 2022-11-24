@@ -35,7 +35,7 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void execute() {
 
-        // What else to put here?
+        // What else to put here? idk
 
         // Filter out low input values to reduce drivetrain drift
         // double leftY = (Math.abs(driverController.getRawAxis(1)) < DRIVE_FILTER_VALUE) ? 0.0f
