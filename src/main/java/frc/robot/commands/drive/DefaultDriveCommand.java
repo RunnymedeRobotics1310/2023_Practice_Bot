@@ -57,7 +57,7 @@ public class DefaultDriveCommand extends CommandBase {
         SmartDashboard.putNumber("Turn", turn);
 
 
-        double leftSpeed, rightSpeed;
+        double leftSpeed = 0, rightSpeed = 0;
 
         if(speed > 0){
             if(turn > 0){
@@ -76,12 +76,12 @@ public class DefaultDriveCommand extends CommandBase {
 
         else if(speed < 0){
             if(turn < 0){
-                leftSpeed = speed + turn;
-                rightSpeed = speed;
+                leftSpeed = speed;
+                rightSpeed = speed + turn;
             }
             else if(turn > 0){
-                leftSpeed = speed;
-                rightSpeed = speed - turn;
+                leftSpeed = speed - turn;
+                rightSpeed = speed;
             }
             else{
                 leftSpeed = speed;
@@ -89,25 +89,23 @@ public class DefaultDriveCommand extends CommandBase {
             }
         }
         else{
-            speed = 0;
+            leftSpeed = speed + turn;
+            rightSpeed = speed - turn;
         }
 
 
 
-
-
-
-
-
-        // doubles the speed of the robot
+        // doubles/quarduples the speed of the robot
         boolean boost = false;
         if (driverController.getRightBumper()) {
             boost = true;
         }
-
         if (!boost) {
-            driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
-        } else {
+            
+            
+           driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
+        }
+         else {
             driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
         }
 
