@@ -1,6 +1,7 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -34,19 +35,91 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void execute() {
 
-        double leftSpeed = - driverController.getLeftY();
+        // What else to put here?
 
-        double rightSpeed = - driverController.getRightY();
+        // Filter out low input values to reduce drivetrain drift
+        // double leftY = (Math.abs(driverController.getRawAxis(1)) < DRIVE_FILTER_VALUE) ? 0.0f
+        //         : driverController.getRawAxis(1);
+        // double leftX = (Math.abs(driverController.getRawAxis(0)) < DRIVE_FILTER_VALUE) ? 0.0f
+        //         : driverController.getRawAxis(0);
+        // double leftSpeed = leftY * -1 + leftX;
+        // double rightSpeed = leftY * -1 - leftX;
 
-        if (Math.abs(leftSpeed) < .1) {
-            leftSpeed = 0;
+        double speed = - driverController.getLeftY();
+
+        if (Math.abs(speed) < .2) {
+            speed = 0;
+        }
+        else {
+            // Scale the range of [0.2-1.0] to [0.0-1.0];
+            speed = ((Math.abs(speed) - .2) / .8) * Math.signum(speed);
         }
 
-        if (Math.abs(rightSpeed) < .1) {
-            rightSpeed = 0;
+        double turn = driverController.getRightX();
+
+        if (Math.abs(turn) < .2) {
+            turn = 0;
+        }
+        else {
+            // Scale the range of [0.2-1.0] to [0.0-1.0];
+            turn = ((Math.abs(turn) - .2) / .8) * Math.signum(turn);
         }
 
-        driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
+        SmartDashboard.putNumber("Speed", speed);
+        SmartDashboard.putNumber("Turn", turn);
+
+        // double leftSpeed = speed + turn;
+        // double rightSpeed = speed - turn;
+        double leftSpeed, rightSpeed;
+
+        if(turn > 0){
+             leftSpeed = speed + turn;
+             rightSpeed = speed;
+        }
+        else if(turn < 0){
+            leftSpeed = speed;
+            rightSpeed = speed - turn;
+        }
+        else{
+            leftSpeed = speed;
+            rightSpeed = speed;
+        }
+
+
+        // Tank drive:
+        // double leftY = -driverController.getRawAxis(1);
+        // double rightY = -driverController.getRawAxis(5);
+        // double leftT = driverController.getRawAxis(2);
+        // double rightT = driverController.getRawAxis(3);
+        boolean boost = false;
+
+        if (driverController.getRightBumper()) {
+            boost = true;
+        }
+        // Also tank drive:
+        // if (leftT >0) {
+        // driveSubsystem.setMotorSpeeds(-leftT, leftT)
+        // }
+        // else if (rightT >0) {
+        // driveSubsystem.setMotorSpeeds(rightT, -rightT);
+        // }
+
+        if (!boost) {
+            // Not sure if this is a good speed!
+            driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
+        } else {
+            driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
+        }
+
+        // stops the robot
+        boolean deadStop = false;
+        if (driverController.getLeftBumper()) {
+            deadStop = true;
+        }
+
+        if (deadStop) {
+            driveSubsystem.setMotorSpeeds(0, 0);
+        }
     }
 
     // Called once the command ends or is interrupted.

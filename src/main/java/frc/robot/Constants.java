@@ -36,6 +36,12 @@ public final class Constants {
                 (ROBOT_WHEEL_DIAMETER_INCHES * Math.PI) / ENCODER_COUNTS_PER_REVOLUTION;
 
         public static final boolean GYRO_REVERSED = false;
+
+        /**
+         * The maximum spin speed (in the range 0-1.0) that should be used
+         * when the robot is spinning in place.
+         */
+        public static final double MAX_SPIN_SPEED = 0.3;
     }
 
     public static final class AutoConstants {
