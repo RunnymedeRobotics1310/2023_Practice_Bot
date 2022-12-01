@@ -10,8 +10,6 @@ public class DefaultDriveCommand extends CommandBase {
     private final DriveSubsystem driveSubsystem;
     private final XboxController driverController;
 
-    private final double DRIVE_FILTER_VALUE = 0.075f;
-
     /**
      * Creates a new ExampleCommand.
      *
