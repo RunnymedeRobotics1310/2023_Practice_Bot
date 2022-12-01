@@ -1,6 +1,7 @@
 package frc.robot.commands.test;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.RunnymedeGameController;
@@ -25,9 +26,6 @@ public class SystemTestCommand extends CommandBase {
      */
     public SystemTestCommand(RunnymedeGameController driverController, DriveSubsystem driveSubsystem) {
 
-        // Set test mode to disable all other commands
-        RobotContainer.setTestMode(true);
-
         this.driverController = driverController;
         this.driveSubsystem = driveSubsystem;
 
@@ -38,7 +36,14 @@ public class SystemTestCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+
         driveSubsystem.setMotorSpeeds(0,  0);
+
+        // Set test mode to disable all other commands
+        RobotContainer.setTestMode(true);
+
+        previousTestMotor = TestMotor.NONE;
+        previousBumperPressed = false;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -46,6 +51,8 @@ public class SystemTestCommand extends CommandBase {
     public void execute() {
 
         TestMotor testMotor = getTestMotor();
+
+        SmartDashboard.putString("Test Motor", testMotor.toString());
 
         if (testMotor != previousTestMotor) {
             motorSpeed = 0;
@@ -84,6 +91,14 @@ public class SystemTestCommand extends CommandBase {
     }
 
     private TestMotor getTestMotor() {
+
+        // If neither of the bumpers is pressed, then
+        // just return the previous value
+        if (       !driverController.getLeftBumper()
+                && !driverController.getRightBumper()) {
+            previousBumperPressed = false;
+            return previousTestMotor;
+        }
 
         // Use the bumpers to get the current test motor
         // The bumpers must both be released in order to

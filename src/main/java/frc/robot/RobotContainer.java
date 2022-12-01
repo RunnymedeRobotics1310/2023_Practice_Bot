@@ -104,9 +104,9 @@ public class RobotContainer {
 
     }
 
-    public static void setTestMode(boolean isTestMode) {
+    public static void setTestMode(boolean newTestMode) {
 
-        testMode = isTestMode;
+        testMode = newTestMode;
 
         SmartDashboard.putBoolean("Test Mode", testMode);
         SmartDashboard.putBoolean("Driver Control", !testMode);

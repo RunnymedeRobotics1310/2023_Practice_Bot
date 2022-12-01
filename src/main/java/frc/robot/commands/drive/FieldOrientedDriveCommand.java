@@ -3,6 +3,7 @@ package frc.robot.commands.drive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.RunnymedeGameController;
 import frc.robot.RunnymedeGameController.Stick;
 import frc.robot.subsystems.DriveSubsystem;
@@ -34,6 +35,7 @@ public class FieldOrientedDriveCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        RobotContainer.setTestMode(false);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -41,6 +43,8 @@ public class FieldOrientedDriveCommand extends CommandBase {
     public void execute() {
 
         double joystickHeading = driverController.getStickAngle(Stick.RIGHT);
+
+        SmartDashboard.putNumber("Joystick Heading", joystickHeading);
 
         double speed = driverController.getLeftY();
 

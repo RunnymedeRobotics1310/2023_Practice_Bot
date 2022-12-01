@@ -100,7 +100,7 @@ public class RunnymedeGameController extends XboxController {
         }
 
         // If the stick is not being moved (significantly), return -1.
-        if (x < .3 && y < .3) {
+        if (Math.abs(x) < .3 && Math.abs(y) < .3) {
             return -1;
         }
 

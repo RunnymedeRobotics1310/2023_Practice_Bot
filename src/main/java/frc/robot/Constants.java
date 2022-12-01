@@ -41,7 +41,7 @@ public final class Constants {
          * The maximum spin speed (in the range 0-1.0) that should be used
          * when the robot is spinning in place.
          */
-        public static final double MAX_SPIN_SPEED = 0.3;
+        public static final double MAX_SPIN_SPEED = 0.5;
     }
 
     public static final class AutoConstants {
