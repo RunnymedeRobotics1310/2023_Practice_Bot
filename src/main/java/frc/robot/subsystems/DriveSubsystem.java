@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -17,6 +18,7 @@ public class DriveSubsystem extends SubsystemBase {
     // The motors on the right side of the drive.
     private final TalonSRX rightPrimaryMotor  = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT);
     private final TalonSRX rightFollowerMotor = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT + 1);
+    private final AnalogInput distanceSensor = new AnalogInput(0);
 
     private double leftSpeed = 0;
     private double rightSpeed = 0;
@@ -113,5 +115,7 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Left Encoder", getLeftEncoder());
 
         SmartDashboard.putNumber("Distance (inches)", getDistanceInches());
+
+        SmartDashboard.putNumber("AnalogInput", distanceSensor.getVoltage());
     }
 }
