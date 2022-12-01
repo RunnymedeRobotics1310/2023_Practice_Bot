@@ -95,14 +95,12 @@ public class DefaultDriveCommand extends CommandBase {
 
 
 
-        // doubles/quarduples the speed of the robot
+        // doubles the speed of the robot
         boolean boost = false;
         if (driverController.getRightBumper()) {
             boost = true;
         }
         if (!boost) {
-            
-            
            driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
         }
          else {
