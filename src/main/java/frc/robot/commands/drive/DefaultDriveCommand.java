@@ -63,7 +63,8 @@ public class DefaultDriveCommand extends CommandBase {
         if (!boost) {
             // Not sure if this is a good speed!
             driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
-        } else {
+        } 
+        else {
             driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
         }
 
