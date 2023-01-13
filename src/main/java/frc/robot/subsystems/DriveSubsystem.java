@@ -160,6 +160,11 @@ public class DriveSubsystem extends SubsystemBase {
 	    }
 	}
     }
+
+    public double getPitch() {
+	return getRawGyroAngle(GyroAxis.PITCH);
+    }
+
     /**
      * Gets the average distance of the two encoders.
      *
@@ -235,6 +240,8 @@ public class DriveSubsystem extends SubsystemBase {
 	else {
 	    SmartDashboard.putData("Gyro", adxrs450Gyro);
 	}
-	SmartDashboard.putNumber("Heading", getHeading());
+
+	SmartDashboard.putNumber("Gyro Heading", getHeading());
+	SmartDashboard.putNumber("Gyro Pitch", getPitch());
     }
 }
