@@ -16,34 +16,40 @@ package frc.robot;
  */
 public final class Constants {
 
-	public static final class DriveConstants {
+    public static final class AutoConstants {
+	public static final String AUTO_PATTERN_DO_NOTHING = "Do nothing";
+	public static final String AUTO_PATTERN_MOVE = "Move";
+    }
 
-		public static final int LEFT_MOTOR_PORT = 10;
-		public static final int RIGHT_MOTOR_PORT = 20;
-		public static final boolean LEFT_MOTOR_REVERSED = false;
-		public static final boolean RIGHT_MOTOR_REVERSED = true;
+    public static final class DriveConstants {
 
-		public static final boolean LEFT_ENCODER_REVERSED = false;
-		public static final boolean RIGHT_ENCODER_REVERSED = true;
+	public static final int     LEFT_MOTOR_PORT = 10;
+	public static final int     RIGHT_MOTOR_PORT = 20;
 
-		public static final int ENCODER_COUNTS_PER_REVOLUTION = 1024;
-		public static final double ROBOT_WHEEL_DIAMETER_INCHES = 6;
+	public static final boolean LEFT_MOTOR_REVERSED = false;
+	public static final boolean RIGHT_MOTOR_REVERSED = true;
 
-		public static final double INCHES_PER_ENCODER_COUNT =
-		    // Assumes the encoders are directly mounted on the wheel shafts
-		    (ROBOT_WHEEL_DIAMETER_INCHES * Math.PI) / ENCODER_COUNTS_PER_REVOLUTION;
+	public static final boolean LEFT_ENCODER_REVERSED = false;
+	public static final boolean RIGHT_ENCODER_REVERSED = true;
 
-		public static final boolean GYRO_REVERSED = false;
-	}
+	public static final int ENCODER_COUNTS_PER_REVOLUTION = 1024;
+	public static final double ROBOT_WHEEL_DIAMETER_INCHES = 6;
 
-	public static final class AutoConstants {
-		public static final String AUTO_PATTERN_DO_NOTHING = "Do nothing";
-		public static final String AUTO_PATTERN_MOVE = "Move";
-	}
+	public static final double INCHES_PER_ENCODER_COUNT =
+		// Assumes the encoders are directly mounted on the wheel shafts
+		(ROBOT_WHEEL_DIAMETER_INCHES * Math.PI) / ENCODER_COUNTS_PER_REVOLUTION;
 
-	public static final class OiConstants {
+	public static final String GYRO_TYPE_NAVX     = "NAV_X";
+	public static final String GYRO_TYPE_ADXRS450 = "ADXRS_450";
+	public static final String GYRO_TYPE          = GYRO_TYPE_NAVX;
 
-		public static final int DRIVER_CONTROLLER_PORT = 0;
-	}
+	public static final boolean GYRO_REVERSED = false;
+
+    }
+
+    public static final class OiConstants {
+
+	public static final int DRIVER_CONTROLLER_PORT = 0;
+    }
 
 }
