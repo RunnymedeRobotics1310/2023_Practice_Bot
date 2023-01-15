@@ -28,7 +28,7 @@
     },
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
-  "editor.defaultFormatter": "mwpb.java-prettier-formatter",
+  "editor.defaultFormatter": "redhat.java",
   "java.format.settings.url": "./TorontoCodingCollective.Formatter.xml",
   "java.format.settings.profile": "TorontoCodingCollective",
   "[java]": {
