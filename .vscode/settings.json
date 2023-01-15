@@ -25,5 +25,15 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests"
+  "java.test.defaultConfig": "WPIlibUnitTests",
+  "java.format.settings.url": "./TorontoCodingCollective.Formatter.xml",
+  "[java]": {
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true
+  },
+  "sonarlint.rules": {
+    "java:S5413": {
+        "level": "on"
+    }
+  }
 }
