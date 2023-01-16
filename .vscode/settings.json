@@ -28,8 +28,8 @@
     },
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
-  "java.format.settings.url": "./TorontoCodingCollective.Formatter.xml",
-  "java.format.settings.profile": "TorontoCodingCollective",
+  "java.format.settings.url": "./Runnymede.Formatter.xml",
+  "java.format.settings.profile": "Runnymede",
   "java.saveActions.organizeImports": true,
   "java.cleanup.actionsOnSave": [
     "addOverride"
