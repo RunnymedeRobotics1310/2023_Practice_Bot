@@ -27,6 +27,16 @@ public class DriveOnHeadingCommand extends CommandBase {
         this(heading, speed, distanceInches, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem);
     }
 
+    /**
+     * Drive on a specified compass heading (0-360 degrees) for the specified distance in inches.
+     *
+     * @param heading 0-360 degrees
+     * @param speed in the range 0-1.0 for forward travel, 0 - -1.0 for reverse travel
+     * @param distanceInches for the robot to travel before this command ends.
+     * Use a positive number even if traveling backwards
+     * @param timeoutSeconds to stop this command if the distance has not been reached
+     * @param driveSubsystem
+     */
     public DriveOnHeadingCommand(double heading, double speed, double distanceInches, double timeoutSeconds,
         DriveSubsystem driveSubsystem) {
 
