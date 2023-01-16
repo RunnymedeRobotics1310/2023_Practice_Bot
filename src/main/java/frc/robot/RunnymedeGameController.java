@@ -36,6 +36,12 @@ public class RunnymedeGameController extends XboxController {
             axisValue  = value;
         }
 
+        // The Y axis values should be inverted in order to make North (away
+        // from the driver) positive.
+        if (axis == XboxController.Axis.kLeftY.value || axis == XboxController.Axis.kRightY.value) {
+            axisValue *= -1.0;
+        }
+
         return axisValue;
     }
 
