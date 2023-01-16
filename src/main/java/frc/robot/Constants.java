@@ -15,7 +15,11 @@ package frc.robot;
  */
 public final class Constants {
 
+    // Global constants
+    public static final double DEFAULT_COMMAND_TIMEOUT_SECONDS = 5;
+
     public static final class AutoConstants {
+
         public static final String AUTO_PATTERN_DO_NOTHING = "Do nothing";
         public static final String AUTO_PATTERN_MOVE       = "Move";
     }
@@ -43,7 +47,6 @@ public final class Constants {
         public static final String  GYRO_TYPE                     = GYRO_TYPE_NAVX;
 
         public static final boolean GYRO_REVERSED                 = false;
-
     }
 
     public static final class OiConstants {

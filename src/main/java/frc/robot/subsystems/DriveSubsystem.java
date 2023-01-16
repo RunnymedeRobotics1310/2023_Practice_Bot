@@ -172,12 +172,14 @@ public class DriveSubsystem extends SubsystemBase {
      *
      * @return the average of the two encoder readings
      */
-    public double getAverageEncoderDistance() {
+    public double getAverageEncoderCounts() {
         return (getLeftEncoder() + getRightEncoder()) / 2;
     }
 
-    public double getDistanceInches() {
-        return getAverageEncoderDistance() * DriveConstants.INCHES_PER_ENCODER_COUNT;
+    public double getEncoderDistanceInches() {
+
+        // FIXME: If using a NavX, pull the distance estimate off the NavX gyro.
+        return getAverageEncoderCounts() * DriveConstants.INCHES_PER_ENCODER_COUNT;
     }
 
     /**
@@ -202,6 +204,10 @@ public class DriveSubsystem extends SubsystemBase {
     public void resetEncoders() {
         // rightEncoder.setPosition(0);
         // leftEncoder.setPosition(0);
+
+        // FIXME: If using a NavX, pull the distance estimate off the NavX gyro.
+        // For the reset routine, just store the current NavX value and
+        // then return the delta from that value on all subsequent reads
     }
 
 
@@ -232,7 +238,7 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Right Encoder", getRightEncoder());
         SmartDashboard.putNumber("Left Encoder", getLeftEncoder());
 
-        SmartDashboard.putNumber("Distance (inches)", getDistanceInches());
+        SmartDashboard.putNumber("Distance (inches)", getEncoderDistanceInches());
 
         SmartDashboard.putNumber("AnalogInput", distanceSensor.getVoltage());
 
