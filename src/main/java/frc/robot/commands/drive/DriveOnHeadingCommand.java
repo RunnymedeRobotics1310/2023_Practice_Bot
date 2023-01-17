@@ -68,6 +68,20 @@ public class DriveOnHeadingCommand extends CommandBase {
 
         double currentHeading = driveSubsystem.getHeading();
 
+        // Determine the error between the current heading and
+        // the desired heading
+        // FIXME:
+        double error          = 0;
+
+        // Drive the motors appropriately to align to the heading
+        // Q: going forward, which direction should the robot
+        // turn based on the error?
+        // FIXME:
+        double leftSpeed      = 0, rightSpeed = 0;
+
+
+        // In the end, set the speeds on the motors
+        driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
     }
 
     @Override
