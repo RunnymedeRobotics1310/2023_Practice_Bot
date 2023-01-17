@@ -77,6 +77,8 @@ public class DriveOnHeadingCommand extends CommandBase {
         // Q: going forward, which direction should the robot
         // turn based on the error?
         // FIXME:
+        // Things to think about: we want the speed to be as close to
+        // the set speed as possible.
         double leftSpeed      = 0, rightSpeed = 0;
 
 
