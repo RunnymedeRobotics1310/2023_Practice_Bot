@@ -55,8 +55,8 @@ public class RunnymedeGameController extends XboxController {
      * the stick axis when they are released. A released controller axis will not
      * always return to zero.
      * <p>
-     * Use the method {@link #getRawHardwareAxisValue} to get the raw hardware value
-     * coming off the axis.
+     * Use the method {@link #getRawHardwareAxisValue} to get the value
+     * coming off the game controller axis.
      *
      * @param axisDeadband
      */
@@ -69,7 +69,7 @@ public class RunnymedeGameController extends XboxController {
      *
      * @param axis see {@link XboxController.Axis} for list of axis constants
      */
-    public double getRawHardwareAxisValue(int axis) {
+    public double getHardwareAxisValue(int axis) {
         return super.getRawAxis(axis);
     }
 }
