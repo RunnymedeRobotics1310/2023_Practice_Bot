@@ -23,6 +23,12 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // Placeholder for auto commands
         switch (selectedAuto) {
 
+        case AutoConstants.AUTO_PATTERN_DO_NOTHING:
+            // Do nothing
+            System.out.println("Do nothing auto selected");
+            addCommands(new InstantCommand());
+            break;
+
         case AutoConstants.AUTO_PATTERN_SCORE_LOW:
             // Bottom score mid depart
             System.out.println("Score Low auto pattern selected");
