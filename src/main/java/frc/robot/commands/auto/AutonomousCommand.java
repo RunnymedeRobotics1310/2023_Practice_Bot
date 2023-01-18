@@ -23,23 +23,49 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // Placeholder for auto commands
         switch (selectedAuto) {
 
-        case AutoConstants.AUTO_PATTERN_DO_NOTHING:
-            // Do nothing
-            System.out.println("Do nothing auto selected");
+        case AutoConstants.AUTO_PATTERN_SCORE_LOW:
+            //  Bottom score mid depart
+            System.out.println("Score Low auto pattern selected");
+            // TODO: 
+            /*
+            move arm low
+            Open pads
+            Close pads
+            */
+
+            case AutoConstants.AUTO_PATTERN_SCORE_MID:
+            //  Bottom score mid depart
+            System.out.println("Score mid auto pattern selected");
+            // TODO: 
+            /*
+            move arm mid
+            Open pads
+            Close pads
+            */
             addCommands(new InstantCommand());
             break;
 
-        case AutoConstants.AUTO_PATTERN_MOVE:
-            // Move
-            System.out.println("Move auto pattern selected");
-            // TODO: Make a new move command and insert it here.
+            case AutoConstants.AUTO_PATTERN_REVERSE:
+            //  Bottom score mid depart
+            System.out.println("Score mid auto pattern selected");
+            // TODO: 
+            /*
+            Drive backwards
+            */
             addCommands(new InstantCommand());
             break;
 
-        default:
-            // How did we get here?
-            System.out.println("Auto selection(" + selectedAuto + ") was not programmed!");
+            case AutoConstants.AUTO_PATTERN_GRAB_PIECE:
+            //  Bottom score mid depart
+            System.out.println("Score mid auto pattern selected");
+            // TODO: 
+            /*
+            Open pads
+            Close pads
+            */
             addCommands(new InstantCommand());
+            break;
+
         }
     }
 

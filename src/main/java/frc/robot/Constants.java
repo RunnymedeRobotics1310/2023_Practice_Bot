@@ -22,6 +22,12 @@ public final class Constants {
 
         public static final String AUTO_PATTERN_DO_NOTHING = "Do nothing";
         public static final String AUTO_PATTERN_MOVE       = "Move";
+        
+        public static final String AUTO_PATTERN_SCORE_LOW = "Score low";
+        public static final String AUTO_PATTERN_SCORE_MID = "Score mid";
+        public static final String AUTO_PATTERN_REVERSE = "Reverse";
+        public static final String AUTO_PATTERN_GRAB_PIECE = "Grab piece";
+
     }
 
     public static final class DriveConstants {
