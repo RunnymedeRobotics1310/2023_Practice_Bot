@@ -13,6 +13,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OiConstants;
 import frc.robot.commands.auto.AutonomousCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
+import frc.robot.commands.drive.DriveModeSelector;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -25,13 +26,16 @@ import frc.robot.subsystems.DriveSubsystem;
 public class RobotContainer {
 
     // The robot's subsystems and commands are defined here...
-    private final DriveSubsystem driveSubsystem   = new DriveSubsystem();
+    private final DriveSubsystem    driveSubsystem    = new DriveSubsystem();
 
     // A chooser for autonomous commands
-    SendableChooser<String>      autoChooser      = new SendableChooser<>();
+    SendableChooser<String>         autoChooser       = new SendableChooser<>();
+
+    // A chooser for the drive mode
+    private final DriveModeSelector driveModeSelector = new DriveModeSelector();
 
     // The driver's controller
-    private final XboxController driverController = new XboxController(OiConstants.DRIVER_CONTROLLER_PORT);
+    private final XboxController    driverController  = new XboxController(OiConstants.DRIVER_CONTROLLER_PORT);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -39,7 +43,7 @@ public class RobotContainer {
     public RobotContainer() {
 
         // Initialize all Subsystem default commands.
-        driveSubsystem.setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem));
+        driveSubsystem.setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector));
 
         // Initialize the autonomous chooser
         autoChooser.setDefaultOption(AutoConstants.AUTO_PATTERN_DO_NOTHING, AutoConstants.AUTO_PATTERN_DO_NOTHING);

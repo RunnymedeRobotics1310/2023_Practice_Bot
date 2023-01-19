@@ -7,20 +7,23 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class DefaultDriveCommand extends CommandBase {
 
-    private final DriveSubsystem driveSubsystem;
-    private final XboxController driverController;
+    private final DriveSubsystem    driveSubsystem;
+    private final XboxController    driverController;
+    private final DriveModeSelector driveModeSelector;
 
-    private final double         DRIVE_FILTER_VALUE = 0.075f;
+    private final double            DRIVE_FILTER_VALUE = 0.075f;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param driveSubsystem The subsystem used by this command.
      */
-    public DefaultDriveCommand(XboxController driverController, DriveSubsystem driveSubsystem) {
+    public DefaultDriveCommand(XboxController driverController, DriveSubsystem driveSubsystem,
+        DriveModeSelector driveModeSelector) {
 
-        this.driverController = driverController;
-        this.driveSubsystem   = driveSubsystem;
+        this.driverController  = driverController;
+        this.driveSubsystem    = driveSubsystem;
+        this.driveModeSelector = driveModeSelector;
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(driveSubsystem);
@@ -35,16 +38,16 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void execute() {
 
-        String driveMode = "ARCADE";
+        DriveMode driveMode = driveModeSelector.getDriveMode();
 
         switch (driveMode) {
-        case "ARCADE":
+        case ARCADE:
             setMotorSpeedsArcade();
             break;
-        case "TANK":
+        case TANK:
             setMotorSpeedsTank();
             break;
-        case "QUENTIN":
+        case QUENTIN:
             setMotorSpeedsQuentin();
             break;
         default:
