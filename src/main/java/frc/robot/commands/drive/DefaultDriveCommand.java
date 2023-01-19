@@ -9,7 +9,7 @@ public class DefaultDriveCommand extends CommandBase {
     private final DriveSubsystem driveSubsystem;
     private final XboxController driverController;
 
-    private final double DRIVE_FILTER_VALUE = 0.075f;
+    private final double         DRIVE_FILTER_VALUE = 0.075f;
 
     /**
      * Creates a new ExampleCommand.
@@ -19,7 +19,7 @@ public class DefaultDriveCommand extends CommandBase {
     public DefaultDriveCommand(XboxController driverController, DriveSubsystem driveSubsystem) {
 
         this.driverController = driverController;
-        this.driveSubsystem = driveSubsystem;
+        this.driveSubsystem   = driveSubsystem;
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(driveSubsystem);
@@ -37,17 +37,17 @@ public class DefaultDriveCommand extends CommandBase {
         // What else to put here?
 
         // Filter out low input values to reduce drivetrain drift
-        double leftY = (Math.abs(driverController.getLeftY()) < DRIVE_FILTER_VALUE) ? 0.0f : driverController.getLeftY();
-        double leftX = (Math.abs(driverController.getLeftX()) < DRIVE_FILTER_VALUE) ? 0.0f : driverController.getLeftX(); 
-        double leftSpeed = leftY * -1 + leftX;
-        double rightSpeed = leftY * -1 - leftX;
+        double  leftY      = (Math.abs(driverController.getLeftY()) < DRIVE_FILTER_VALUE) ? 0.0f : driverController.getLeftY();
+        double  leftX      = (Math.abs(driverController.getLeftX()) < DRIVE_FILTER_VALUE) ? 0.0f : driverController.getLeftX();
+        double  leftSpeed  = leftY * -1 + leftX;
+        double  rightSpeed = leftY * -1 - leftX;
 
         // Tank drive:
         // double leftY = -driverController.getRawAxis(1);
         // double rightY = -driverController.getRawAxis(5);
         // double leftT = driverController.getRawAxis(2);
         // double rightT = driverController.getRawAxis(3);
-        boolean boost = false;
+        boolean boost      = false;
 
         if (driverController.getRightBumper()) {
             boost = true;
@@ -63,7 +63,8 @@ public class DefaultDriveCommand extends CommandBase {
         if (!boost) {
             // Not sure if this is a good speed!
             driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
-        } else {
+        }
+        else {
             driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
         }
 

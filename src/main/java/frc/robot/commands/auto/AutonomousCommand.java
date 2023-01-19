@@ -8,9 +8,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class AutonomousCommand extends SequentialCommandGroup {
 
-    public AutonomousCommand(
-            DriveSubsystem driveSubsystem,
-            SendableChooser<String> autoChooser) {
+    public AutonomousCommand(DriveSubsystem driveSubsystem, SendableChooser<String> autoChooser) {
 
         String selectedAuto = autoChooser.getSelected();
 
@@ -25,23 +23,69 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // Placeholder for auto commands
         switch (selectedAuto) {
 
-            case AutoConstants.AUTO_PATTERN_DO_NOTHING:
-                // Do nothing
-                System.out.println("Do nothing auto selected");
-                addCommands(new InstantCommand());
-                break;
+        case AutoConstants.AUTO_PATTERN_DO_NOTHING:
+            // Do nothing
+            System.out.println("Do nothing auto selected");
+            addCommands(new InstantCommand());
+            break;
 
-            case AutoConstants.AUTO_PATTERN_MOVE:
-                // Move
-                System.out.println("Move auto pattern selected");
-                // TODO: Make a new move command and insert it here.
-                addCommands(new InstantCommand());
-                break;
+        case AutoConstants.AUTO_PATTERN_SCORE_LOW:
+            // Bottom score mid depart
+            System.out.println("Score Low auto pattern selected");
+            // TODO:
+            /*
+             * move arm low
+             * Open pads
+             * Close pads
+             */
 
-            default:
-                // How did we get here?
-                System.out.println("Auto selection(" + selectedAuto + ") was not programmed!");
-                addCommands(new InstantCommand());
+        case AutoConstants.AUTO_PATTERN_SCORE_MID:
+            // Bottom score mid depart
+            System.out.println("Score mid auto pattern selected");
+            // TODO:
+            /*
+             * move arm mid
+             * Open pads
+             * Close pads
+             */
+            addCommands(new InstantCommand());
+            break;
+
+        case AutoConstants.AUTO_PATTERN_REVERSE:
+            // Bottom score mid depart
+            System.out.println("Score mid auto pattern selected");
+            // TODO:
+            /*
+             * Drive backwards
+             */
+            addCommands(new InstantCommand());
+            break;
+
+        case AutoConstants.AUTO_PATTERN_GRAB_PIECE:
+            // Bottom score mid depart
+            System.out.println("Score mid auto pattern selected");
+            // TODO:
+            /*
+             * Open pads
+             * Close pads
+             */
+            addCommands(new InstantCommand());
+            break;
+
+        case AutoConstants.AUTO_PATTERN_BALANCE:
+            // Balance on charge station
+            System.out.println("Balance auto pattern selected");
+            /*
+             * TODO
+             * balance
+             */
+            addCommands(new InstantCommand());
+            break;
+
+        default:
+            // How did we get here?
+            System.out.println("Auto selection(" + selectedAuto + ") was not programmed!");
+            addCommands(new InstantCommand());
         }
     }
 

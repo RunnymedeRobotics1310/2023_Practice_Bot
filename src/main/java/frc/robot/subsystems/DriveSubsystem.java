@@ -3,25 +3,37 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
 
     // The motors on the left side of the drive.
-    private final TalonSRX leftPrimaryMotor  = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT);
-    private final TalonSRX leftFollowerMotor = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT + 1);
+    private final TalonSRX    leftPrimaryMotor   = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT);
+    private final TalonSRX    leftFollowerMotor  = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT + 1);
 
     // The motors on the right side of the drive.
-    private final TalonSRX rightPrimaryMotor  = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT);
-    private final TalonSRX rightFollowerMotor = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT + 1);
-    private final AnalogInput distanceSensor = new AnalogInput(0);
+    private final TalonSRX    rightPrimaryMotor  = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT);
+    private final TalonSRX    rightFollowerMotor = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT + 1);
+    private final AnalogInput distanceSensor     = new AnalogInput(0);
 
-    private double leftSpeed = 0;
-    private double rightSpeed = 0;
+    private double            leftSpeed          = 0;
+    private double            rightSpeed         = 0;
+
+    private ADXRS450_Gyro     adxrs450Gyro       = null;
+    private AHRS              navXGyro           = null;
+
+    private double            gyroHeadingOffset  = 0;
+
+    private enum GyroAxis {
+        YAW, PITCH, ROLL
+    };
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
@@ -48,10 +60,111 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Setting both encoders to 0
         resetEncoders();
+
+        if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
+            navXGyro = new AHRS();
+        }
+        else {
+            adxrs450Gyro = new ADXRS450_Gyro();
+        }
     }
 
-    public double getDistanceInches() {
-        return getAverageEncoderDistance() * DriveConstants.INCHES_PER_ENCODER_COUNT;
+    /**
+     * Calibrate Gyro
+     * <p>
+     * This routine calibrates the gyro. The robot must not be moved during the
+     * calibrate routine which lasts about 10 seconds
+     */
+    public void calibrateGyro() {
+
+        gyroHeadingOffset = 0;
+
+        if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
+            navXGyro.calibrate();
+        }
+        else {
+            adxrs450Gyro.calibrate();
+        }
+    }
+
+    /**
+     * Reset Gyro
+     * <p>
+     * This routine resets the gyro angle to zero.
+     * <p>
+     * NOTE: This is not the same as calibrating the gyro.
+     */
+    public void resetGyroHeading() {
+        setGyroHeading(0);
+    }
+
+    /**
+     * Set Gyro Heading
+     * <p>
+     * This routine sets the gyro heading to a known value.
+     */
+    public void setGyroHeading(double heading) {
+
+        // Clear the current offset.
+        gyroHeadingOffset = 0;
+
+        // Adjust the offset so that the heading is now the current heading.
+        gyroHeadingOffset = getHeading() - heading;
+    }
+
+    /**
+     * Gets the heading of the robot.
+     *
+     * @return heading in the range of 0 - 360 degrees
+     */
+    public double getHeading() {
+
+        double gyroAngle = getRawGyroAngle(GyroAxis.YAW);
+
+        // subtract the offset angle that was saved when the gyro
+        // was last rest.
+        gyroAngle -= gyroHeadingOffset;
+
+        // The angle can be positive or negative and extends beyond 360 degrees.
+        double heading = gyroAngle % 360.0;
+
+        if (heading < 0) {
+            heading += 360;
+        }
+
+        return heading;
+    }
+
+    private double getRawGyroAngle(GyroAxis gyroAxis) {
+
+        if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
+            switch (gyroAxis) {
+            case YAW:
+                return navXGyro.getAngle();
+            case PITCH:
+                return navXGyro.getPitch();
+            case ROLL:
+                return navXGyro.getRoll();
+            default:
+                return 0;
+            }
+        }
+        else {
+            switch (gyroAxis) {
+            case YAW:
+                return adxrs450Gyro.getAngle();
+            case PITCH:
+                return 0;
+            case ROLL:
+                return 0;
+            default:
+                return 0;
+            }
+        }
+    }
+
+    public double getPitch() {
+        return getRawGyroAngle(GyroAxis.PITCH);
     }
 
     /**
@@ -59,8 +172,14 @@ public class DriveSubsystem extends SubsystemBase {
      *
      * @return the average of the two encoder readings
      */
-    public double getAverageEncoderDistance() {
+    public double getAverageEncoderCounts() {
         return (getLeftEncoder() + getRightEncoder()) / 2;
+    }
+
+    public double getEncoderDistanceInches() {
+
+        // FIXME: If using a NavX, pull the distance estimate off the NavX gyro.
+        return getAverageEncoderCounts() * DriveConstants.INCHES_PER_ENCODER_COUNT;
     }
 
     /**
@@ -69,7 +188,7 @@ public class DriveSubsystem extends SubsystemBase {
      * @return the left drive encoder
      */
     public double getLeftEncoder() {
-        return 0; //leftEncoder.getPosition();
+        return 0; // leftEncoder.getPosition();
     }
 
     /**
@@ -83,9 +202,14 @@ public class DriveSubsystem extends SubsystemBase {
 
     /** Resets the drive encoders to currently read a position of 0. */
     public void resetEncoders() {
-        //        rightEncoder.setPosition(0);
-        //        leftEncoder.setPosition(0);
+        // rightEncoder.setPosition(0);
+        // leftEncoder.setPosition(0);
+
+        // FIXME: If using a NavX, pull the distance estimate off the NavX gyro.
+        // For the reset routine, just store the current NavX value and
+        // then return the delta from that value on all subsequent reads
     }
+
 
     /**
      * Set the left and right speed of the primary and follower motors
@@ -95,7 +219,7 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public void setMotorSpeeds(double leftSpeed, double rightSpeed) {
 
-        this.leftSpeed = leftSpeed;
+        this.leftSpeed  = leftSpeed;
         this.rightSpeed = rightSpeed;
 
         leftPrimaryMotor.set(ControlMode.PercentOutput, leftSpeed);
@@ -114,8 +238,23 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Right Encoder", getRightEncoder());
         SmartDashboard.putNumber("Left Encoder", getLeftEncoder());
 
-        SmartDashboard.putNumber("Distance (inches)", getDistanceInches());
+        SmartDashboard.putNumber("Distance (inches)", getEncoderDistanceInches());
 
         SmartDashboard.putNumber("AnalogInput", distanceSensor.getVoltage());
+
+        if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
+            SmartDashboard.putData("Gyro", navXGyro);
+
+            // Put the displacements on the smartDashboard for testing (round to nearest cm)
+            SmartDashboard.putNumber("NavX: X (m)", Math.round(navXGyro.getDisplacementX() * 100) / 100d);
+            SmartDashboard.putNumber("NavX: Y (m)", Math.round(navXGyro.getDisplacementY() * 100) / 100d);
+            SmartDashboard.putNumber("NavX: Z (m)", Math.round(navXGyro.getDisplacementZ() * 100) / 100d);
+        }
+        else {
+            SmartDashboard.putData("Gyro", adxrs450Gyro);
+        }
+
+        SmartDashboard.putNumber("Gyro Heading", getHeading());
+        SmartDashboard.putNumber("Gyro Pitch", getPitch());
     }
 }
