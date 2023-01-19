@@ -20,13 +20,24 @@ public final class Constants {
 
     public static final class AutoConstants {
 
-        public static final String AUTO_PATTERN_DO_NOTHING = "Do nothing";
+        public static final String AUTO_START_TOP              = "Top";
+        public static final String AUTO_START_MID              = "Mid";
+        public static final String AUTO_START_BOTTOM           = "Bottom";
 
-        public static final String AUTO_PATTERN_SCORE_LOW  = "Score low";
-        public static final String AUTO_PATTERN_SCORE_MID  = "Score mid";
-        public static final String AUTO_PATTERN_REVERSE    = "Reverse";
-        public static final String AUTO_PATTERN_GRAB_PIECE = "Grab piece";
-        public static final String AUTO_PATTERN_BALANCE    = "Balance";
+        public static final String AUTO_ORIENTATION_FACE_GRID  = "Face grid";
+        public static final String AUTO_ORIENTATION_FACE_FIELD = "Face field";
+
+        public static final String AUTO_DO_NOTHING             = "Do nothing";
+
+        public static final String AUTO_SCORE_LOW              = "Score low";
+        public static final String AUTO_SCORE_MID              = "Score mid";
+
+        public static final String AUTO_LEAVE_ZONE             = "Leave zone";
+        public static final String AUTO_GRAB_PIECE             = "Grab piece";
+
+        public static final String AUTO_NO_SECOND_PIECE        = "No second piece";
+
+        public static final String AUTO_BALANCE                = "Balance";
     }
 
     public static final class DriveConstants {
