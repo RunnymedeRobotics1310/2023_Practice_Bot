@@ -29,10 +29,56 @@ public class AutonomousCommand extends SequentialCommandGroup {
             addCommands(new InstantCommand());
             break;
 
-        case AutoConstants.AUTO_PATTERN_MOVE:
-            // Move
-            System.out.println("Move auto pattern selected");
-            // TODO: Make a new move command and insert it here.
+        case AutoConstants.AUTO_PATTERN_SCORE_LOW:
+            // Bottom score mid depart
+            System.out.println("Score Low auto pattern selected");
+            // TODO:
+            /*
+             * move arm low
+             * Open pads
+             * Close pads
+             */
+
+        case AutoConstants.AUTO_PATTERN_SCORE_MID:
+            // Bottom score mid depart
+            System.out.println("Score mid auto pattern selected");
+            // TODO:
+            /*
+             * move arm mid
+             * Open pads
+             * Close pads
+             */
+            addCommands(new InstantCommand());
+            break;
+
+        case AutoConstants.AUTO_PATTERN_REVERSE:
+            // Bottom score mid depart
+            System.out.println("Score mid auto pattern selected");
+            // TODO:
+            /*
+             * Drive backwards
+             */
+            addCommands(new InstantCommand());
+            break;
+
+        case AutoConstants.AUTO_PATTERN_GRAB_PIECE:
+            // Bottom score mid depart
+            System.out.println("Score mid auto pattern selected");
+            // TODO:
+            /*
+             * Open pads
+             * Close pads
+             */
+            addCommands(new InstantCommand());
+            break;
+
+        case AutoConstants.AUTO_PATTERN_BALANCE:
+            // Balance on charge station
+            System.out.println("Balance auto pattern selected");
+            /*
+             * TODO
+             * balance
+             */
             addCommands(new InstantCommand());
             break;
 

@@ -244,6 +244,11 @@ public class DriveSubsystem extends SubsystemBase {
 
         if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
             SmartDashboard.putData("Gyro", navXGyro);
+
+            // Put the displacements on the smartDashboard for testing (round to nearest cm)
+            SmartDashboard.putNumber("NavX: X (m)", Math.round(navXGyro.getDisplacementX() * 100) / 100d);
+            SmartDashboard.putNumber("NavX: Y (m)", Math.round(navXGyro.getDisplacementY() * 100) / 100d);
+            SmartDashboard.putNumber("NavX: Z (m)", Math.round(navXGyro.getDisplacementZ() * 100) / 100d);
         }
         else {
             SmartDashboard.putData("Gyro", adxrs450Gyro);

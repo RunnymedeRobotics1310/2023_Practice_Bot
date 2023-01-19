@@ -44,7 +44,7 @@ public class RobotContainer {
         // Initialize the autonomous chooser
         autoChooser.setDefaultOption(AutoConstants.AUTO_PATTERN_DO_NOTHING, AutoConstants.AUTO_PATTERN_DO_NOTHING);
         SmartDashboard.putData(autoChooser);
-        autoChooser.addOption(AutoConstants.AUTO_PATTERN_MOVE, AutoConstants.AUTO_PATTERN_MOVE);
+        autoChooser.addOption(AutoConstants.AUTO_PATTERN_BALANCE, AutoConstants.AUTO_PATTERN_BALANCE);
 
         // Configure the button bindings
         configureButtonBindings();
