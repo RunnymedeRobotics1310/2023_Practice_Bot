@@ -28,19 +28,16 @@
     },
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
-  "java.format.settings.url": "./Runnymede.Formatter.xml",
-  "java.format.settings.profile": "Runnymede",
-  "java.saveActions.organizeImports": true,
-  "java.cleanup.actionsOnSave": [
-    "addOverride"
-  ],
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": true
-  },
+  "editor.defaultFormatter": "redhat.java",
+  "java.format.settings.url": "./TorontoCodingCollective.Formatter.xml",
+  "java.format.settings.profile": "TorontoCodingCollective",
   "[java]": {
-  	"editor.formatOnPaste": true,
-    "editor.formatOnSave": true,
-    "editor.formatOnType": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true
   },
-  "java.jdt.ls.vmargs": "-Xmx1G -Xms200m -Xlog:disable"
+  "sonarlint.rules": {
+    "java:S5413": {
+      "level": "on"
+    }
+  }
 }
