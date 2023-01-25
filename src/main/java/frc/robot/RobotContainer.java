@@ -26,21 +26,21 @@ import frc.robot.subsystems.DriveSubsystem;
 public class RobotContainer {
 
     // The robot's subsystems and commands are defined here...
-    private final DriveSubsystem    driveSubsystem    = new DriveSubsystem();
+    private final DriveSubsystem    driveSubsystem                = new DriveSubsystem();
 
     // A set of choosers for autonomous patterns
-    SendableChooser<String>      startingPositionChooser       = new SendableChooser<>();
-    SendableChooser<String>      startingOrientationChooser    = new SendableChooser<>();
-    SendableChooser<String>      firstGamePieceScoringChooser  = new SendableChooser<>();
-    SendableChooser<String>      exitZoneActionChooser         = new SendableChooser<>();
-    SendableChooser<String>      secondGamePieceScoringChooser = new SendableChooser<>();
-    SendableChooser<String>      balanceChooser                = new SendableChooser<>();
+    SendableChooser<String>         startingPositionChooser       = new SendableChooser<>();
+    SendableChooser<String>         startingOrientationChooser    = new SendableChooser<>();
+    SendableChooser<String>         firstGamePieceScoringChooser  = new SendableChooser<>();
+    SendableChooser<String>         exitZoneActionChooser         = new SendableChooser<>();
+    SendableChooser<String>         secondGamePieceScoringChooser = new SendableChooser<>();
+    SendableChooser<String>         balanceChooser                = new SendableChooser<>();
 
     // A chooser for the drive mode
-    private final DriveModeSelector driveModeSelector = new DriveModeSelector();
+    private final DriveModeSelector driveModeSelector             = new DriveModeSelector();
 
     // The driver's controller
-    private final XboxController    driverController  = new XboxController(OiConstants.DRIVER_CONTROLLER_PORT);
+    private final XboxController    driverController              = new XboxController(OiConstants.DRIVER_CONTROLLER_PORT);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -72,7 +72,8 @@ public class RobotContainer {
 
         firstGamePieceScoringChooser.setDefaultOption(AutoConstants.AUTO_SCORE_LOW, AutoConstants.AUTO_SCORE_LOW);
         SmartDashboard.putData(firstGamePieceScoringChooser);
-        firstGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID, AutoConstants.AUTO_SCORE_MID);
+        firstGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID_CONE, AutoConstants.AUTO_SCORE_MID_CONE);
+        firstGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID_CUBE, AutoConstants.AUTO_SCORE_MID_CUBE);
         firstGamePieceScoringChooser.addOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
 
         exitZoneActionChooser.setDefaultOption(AutoConstants.AUTO_LEAVE_ZONE, AutoConstants.AUTO_LEAVE_ZONE);
@@ -83,7 +84,8 @@ public class RobotContainer {
         secondGamePieceScoringChooser.setDefaultOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
         SmartDashboard.putData(secondGamePieceScoringChooser);
         secondGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_LOW, AutoConstants.AUTO_SCORE_LOW);
-        secondGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID, AutoConstants.AUTO_SCORE_MID);
+        secondGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID_CONE, AutoConstants.AUTO_SCORE_MID_CONE);
+        secondGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID_CUBE, AutoConstants.AUTO_SCORE_MID_CUBE);
 
         balanceChooser.setDefaultOption(AutoConstants.AUTO_BALANCE, AutoConstants.AUTO_BALANCE);
         SmartDashboard.putData(balanceChooser);

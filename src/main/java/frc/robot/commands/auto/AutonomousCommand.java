@@ -25,15 +25,17 @@ public class AutonomousCommand extends SequentialCommandGroup {
     private String              balanceAction          = null;
 
 
-    public AutonomousCommand(DriveSubsystem driveSubsystem, SendableChooser<String> startingPositionChooser,
-        SendableChooser<String> startingOrientationChooser, SendableChooser<String> firstGamePieceScoringChooser,
-        SendableChooser<String> exitZoneActionChooser, SendableChooser<String> secondGamePieceScoringChooser,
+    public AutonomousCommand(DriveSubsystem driveSubsystem,
+        SendableChooser<String> startingPositionChooser,
+        SendableChooser<String> startingOrientationChooser,
+        SendableChooser<String> firstGamePieceScoringChooser,
+        SendableChooser<String> exitZoneActionChooser,
+        SendableChooser<String> secondGamePieceScoringChooser,
         SendableChooser<String> balanceChooser) {
 
         // Default is to do nothing.
         // If more commands are added, the instant command will end and
         // the next command will be executed.
-
         addCommands(new InstantCommand());
 
         startingPosition       = startingPositionChooser.getSelected();
@@ -60,8 +62,12 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // If any of these are null, then there was some kind of error.
         // FIXME: Is there anything we can do here?
-        if (startingPosition == null || currentOrientation == null || firstGamePieceScoring == null || exitZoneAction == null
-            || secondGamePieceScoring == null || balanceAction == null) {
+        if (startingPosition == null
+            || currentOrientation == null
+            || firstGamePieceScoring == null
+            || exitZoneAction == null
+            || secondGamePieceScoring == null
+            || balanceAction == null) {
 
             System.out.println("*** ERROR - null found in auto pattern builder ***");
             return;
@@ -85,33 +91,41 @@ public class AutonomousCommand extends SequentialCommandGroup {
          */
         if (currentOrientation.equals(AutoConstants.AUTO_ORIENTATION_FACE_GRID)) {
 
+            // FIXME:
             // set the gyro heading to 180 degrees to match the robot field alignment
-            // zero (North) is always pointing away from the driverstation.
+            // zero (North) is always pointing away from the driver station.
+
+            // addCommands(new SetGyroHeadingCommand(180)); <- for example
         }
 
         /*
          * Compose the required auto commands for each of the steps in the auto
          * based on the selector values
          */
-        addFirstGamePieceCommands();
-        addExitZoneCommands();
-        addSecondGamePieceCommands();
-        addBalanceCommands();
+        addStep1Commands_ScoreFirstGamePiece();
+        addStep2Commands_ExitZone();
+        addStep3Commands_ScoreSecondGamePiece();
+        addStep4Commands_Balance();
     }
 
-    private void addFirstGamePieceCommands() {
+    /**
+     * Step 1 - Score first game piece
+     */
+    private void addStep1Commands_ScoreFirstGamePiece() {
 
         // The selector must be set to score low or score mid, otherwise
         // there is nothing to do
 
         if (!(firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_LOW)
-            || firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID))) {
+            || firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CONE)
+            || firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CUBE))) {
             return;
         }
 
         if (currentOrientation.equals(AutoConstants.AUTO_ORIENTATION_FACE_GRID)) {
 
-            // Set the arm position
+            // FIXME:
+            // Set the arm position (different positions required for cone or cube
             // Drive forward?
             // Drop the piece
 
@@ -121,30 +135,39 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
             // When facing the field, only a low delivery is allowed because a piece would be
             // balanced on the bumper
-            if (firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID)) {
+            if (firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CONE)
+                || firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CUBE)) {
                 System.out.println("Cannot score mid unless facing grid, overriding to score low");
             }
 
+            // FIXME:
             // Drive Backward and forward
             // NOTE: deposit the piece placed on the bumper in the low scoring position using
-            // gravity and inertia
+            // gravity and inertia (or maybe a piston?)
         }
     }
 
-    private void addExitZoneCommands() {
+    /**
+     * Step 2 - Exit the zone, and optionally pick up a second game piece
+     */
+    private void addStep2Commands_ExitZone() {
 
         // An exit zone action must be selected, otherwise do nothing
 
-        if (!(exitZoneAction.equals(AutoConstants.AUTO_LEAVE_ZONE) || exitZoneAction.equals(AutoConstants.AUTO_GRAB_PIECE))) {
+        if (!(exitZoneAction.equals(AutoConstants.AUTO_LEAVE_ZONE)
+            || exitZoneAction.equals(AutoConstants.AUTO_GRAB_PIECE))) {
             return;
         }
 
         // Start by moving to the center of the field
         if (currentOrientation.equals(AutoConstants.AUTO_ORIENTATION_FACE_GRID)) {
 
+            // FIXME:
             // Back up out of zone
         }
         else {
+
+            // FIXME:
             // drive forward out of the zone
         }
 
@@ -160,6 +183,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
         /*
          * Grab a piece
          */
+
+        // FIXME:
         // Rotate to heading zero
         // Note: the robot may already be at heading zero if it started facing the field
         // VISION? Look for a piece
@@ -170,12 +195,16 @@ public class AutonomousCommand extends SequentialCommandGroup {
         currentOrientation = AutoConstants.AUTO_ORIENTATION_FACE_FIELD;
     }
 
-    private void addSecondGamePieceCommands() {
+    /**
+     * Step 3 - Deliver a second game piece if required
+     */
+    private void addStep3Commands_ScoreSecondGamePiece() {
 
         // If a scoring location is not set, there is nothing to do.
 
         if (!(secondGamePieceScoring.equals(AutoConstants.AUTO_SCORE_LOW)
-            || secondGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID))) {
+            || secondGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CONE)
+            || secondGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CUBE))) {
             return;
         }
 
@@ -187,6 +216,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
             return;
         }
 
+        // FIXME:
         // Rotate to heading 180 to face the grid
         // Drive over to the grid
         // VISION? Acquire the nearest vision target
@@ -198,13 +228,18 @@ public class AutonomousCommand extends SequentialCommandGroup {
         currentZone        = ZONE_AT_GRID;
     }
 
-    private void addBalanceCommands() {
+    /**
+     * Step 4 - Balance if required
+     */
+    private void addStep4Commands_Balance() {
 
         // If the balance command was not selected, there is nothing to do
 
         if (!balanceAction.equals(AutoConstants.AUTO_BALANCE)) {
             return;
         }
+
+        // FIXME:
 
         // Determine the path to the platform
 

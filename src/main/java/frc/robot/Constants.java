@@ -30,7 +30,8 @@ public final class Constants {
         public static final String AUTO_DO_NOTHING             = "Do nothing";
 
         public static final String AUTO_SCORE_LOW              = "Score low";
-        public static final String AUTO_SCORE_MID              = "Score mid";
+        public static final String AUTO_SCORE_MID_CONE         = "Score mid cone";
+        public static final String AUTO_SCORE_MID_CUBE         = "Score mid cube";
 
         public static final String AUTO_LEAVE_ZONE             = "Leave zone";
         public static final String AUTO_GRAB_PIECE             = "Grab piece";
