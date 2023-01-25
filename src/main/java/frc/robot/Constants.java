@@ -29,11 +29,11 @@ public final class Constants {
         public static final String AUTO_PATTERN_BALANCE    = "Balance";
     }
 
-    public static enum DriveMode {
-        TANK, ARCADE, QUENTIN;
-    }
-
     public static final class DriveConstants {
+
+        public static enum DriveMode {
+            TANK, ARCADE, QUENTIN;
+        }
 
         public static final int     LEFT_MOTOR_PORT               = 10;
         public static final int     RIGHT_MOTOR_PORT              = 20;
