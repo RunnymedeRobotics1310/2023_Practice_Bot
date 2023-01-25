@@ -28,8 +28,13 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DriveSubsystem    driveSubsystem    = new DriveSubsystem();
 
-    // A chooser for autonomous commands
-    SendableChooser<String>         autoChooser       = new SendableChooser<>();
+    // A set of choosers for autonomous patterns
+    SendableChooser<String>      startingPositionChooser       = new SendableChooser<>();
+    SendableChooser<String>      startingOrientationChooser    = new SendableChooser<>();
+    SendableChooser<String>      firstGamePieceScoringChooser  = new SendableChooser<>();
+    SendableChooser<String>      exitZoneActionChooser         = new SendableChooser<>();
+    SendableChooser<String>      secondGamePieceScoringChooser = new SendableChooser<>();
+    SendableChooser<String>      balanceChooser                = new SendableChooser<>();
 
     // A chooser for the drive mode
     private final DriveModeSelector driveModeSelector = new DriveModeSelector();
@@ -45,13 +50,45 @@ public class RobotContainer {
         // Initialize all Subsystem default commands.
         driveSubsystem.setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector));
 
-        // Initialize the autonomous chooser
-        autoChooser.setDefaultOption(AutoConstants.AUTO_PATTERN_DO_NOTHING, AutoConstants.AUTO_PATTERN_DO_NOTHING);
-        SmartDashboard.putData(autoChooser);
-        autoChooser.addOption(AutoConstants.AUTO_PATTERN_BALANCE, AutoConstants.AUTO_PATTERN_BALANCE);
+        // Initialize the autonomous choosers
+        initAutoSelectors();
 
         // Configure the button bindings
         configureButtonBindings();
+    }
+
+    private void initAutoSelectors() {
+
+        startingPositionChooser.setDefaultOption(AutoConstants.AUTO_START_TOP, AutoConstants.AUTO_START_TOP);
+        SmartDashboard.putData(startingPositionChooser);
+        startingPositionChooser.addOption(AutoConstants.AUTO_START_MID, AutoConstants.AUTO_START_MID);
+        startingPositionChooser.addOption(AutoConstants.AUTO_START_BOTTOM, AutoConstants.AUTO_START_BOTTOM);
+
+        startingOrientationChooser.setDefaultOption(AutoConstants.AUTO_ORIENTATION_FACE_GRID,
+            AutoConstants.AUTO_ORIENTATION_FACE_GRID);
+        SmartDashboard.putData(startingOrientationChooser);
+        startingOrientationChooser.addOption(AutoConstants.AUTO_ORIENTATION_FACE_FIELD,
+            AutoConstants.AUTO_ORIENTATION_FACE_FIELD);
+
+        firstGamePieceScoringChooser.setDefaultOption(AutoConstants.AUTO_SCORE_LOW, AutoConstants.AUTO_SCORE_LOW);
+        SmartDashboard.putData(firstGamePieceScoringChooser);
+        firstGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID, AutoConstants.AUTO_SCORE_MID);
+        firstGamePieceScoringChooser.addOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
+
+        exitZoneActionChooser.setDefaultOption(AutoConstants.AUTO_LEAVE_ZONE, AutoConstants.AUTO_LEAVE_ZONE);
+        SmartDashboard.putData(exitZoneActionChooser);
+        exitZoneActionChooser.addOption(AutoConstants.AUTO_GRAB_PIECE, AutoConstants.AUTO_GRAB_PIECE);
+        exitZoneActionChooser.addOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
+
+        secondGamePieceScoringChooser.setDefaultOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
+        SmartDashboard.putData(secondGamePieceScoringChooser);
+        secondGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_LOW, AutoConstants.AUTO_SCORE_LOW);
+        secondGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID, AutoConstants.AUTO_SCORE_MID);
+
+        balanceChooser.setDefaultOption(AutoConstants.AUTO_BALANCE, AutoConstants.AUTO_BALANCE);
+        SmartDashboard.putData(balanceChooser);
+        balanceChooser.addOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
+
     }
 
     /**
@@ -70,7 +107,8 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
 
-        return new AutonomousCommand(driveSubsystem, autoChooser);
+        return new AutonomousCommand(driveSubsystem, startingPositionChooser, startingOrientationChooser,
+            firstGamePieceScoringChooser, exitZoneActionChooser, secondGamePieceScoringChooser, balanceChooser);
 
     }
 }
