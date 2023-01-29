@@ -229,6 +229,11 @@ public class DriveSubsystem extends SubsystemBase {
         // motors
     }
 
+    /** Safely stop the subsystem from moving */
+    public void stop() {
+        setMotorSpeeds(0, 0);
+    }
+
     @Override
     public void periodic() {
 

@@ -9,11 +9,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OiConstants;
+import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.AutonomousCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.DriveModeSelector;
+import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -100,6 +103,19 @@ public class RobotContainer {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+
+        // Cancel all commands on the XBox controller three lines (aka. start) button
+        new Trigger(() -> driverController.getStartButton())
+            .onTrue(new CancelCommand(driveSubsystem));
+
+        // Example using the POV to Drive on Heading at .5 speed for 50cm.
+        new Trigger(() -> (driverController.getPOV() == 0))
+            .onTrue(new DriveOnHeadingCommand(0, .5, 50, driveSubsystem));
+
+        new Trigger(() -> (driverController.getPOV() == 90))
+            .onTrue(new DriveOnHeadingCommand(90, .5, 50, driveSubsystem));
+
+        // ... etc for 180, 270.
     }
 
     /**
