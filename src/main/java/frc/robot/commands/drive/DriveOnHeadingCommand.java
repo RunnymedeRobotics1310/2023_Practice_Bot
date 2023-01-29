@@ -52,6 +52,12 @@ public class DriveOnHeadingCommand extends CommandBase {
     @Override
     public void initialize() {
 
+        System.out.println("DriveOnHeadingCommand started."
+            + " Heading " + heading
+            + ", Speed " + speed
+            + ", distance " + distanceInches
+            + ", timeout " + timeoutSeconds);
+
         // Reset the distance to zero.
         // Note: this must be done in the initialize instead of in the constructor
         // because the command could get constructed long before it is run
@@ -107,6 +113,19 @@ public class DriveOnHeadingCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+
+        // Print an end of command message in the logs
+        double runTime = (System.currentTimeMillis() - initializeTime) / 1000d;
+
+        if (interrupted) {
+            System.out.print("DriveOnHeadingCommand interrupted");
+        }
+        else {
+            System.out.print("DriveOnHeadingCommand ended");
+        }
+        System.out.println(" at distance " + driveSubsystem.getEncoderDistanceInches()
+            + ", on heading " + driveSubsystem.getHeading()
+            + ", in " + runTime + "s");
 
         // Stop the robot
         driveSubsystem.setMotorSpeeds(0, 0);
