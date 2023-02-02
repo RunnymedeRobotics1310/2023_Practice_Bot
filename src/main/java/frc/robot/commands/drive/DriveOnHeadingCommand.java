@@ -99,7 +99,7 @@ public class DriveOnHeadingCommand extends CommandBase {
 
         // Check the distance
         // use the absolute value to account for driving backwards
-        if (Math.abs(driveSubsystem.getEncoderDistanceInches()) > Math.abs(distanceInches)) {
+        if (Math.abs(driveSubsystem.getEncoderDistanceCm()) > Math.abs(distanceInches)) {
             return true;
         }
 
@@ -123,7 +123,7 @@ public class DriveOnHeadingCommand extends CommandBase {
         else {
             System.out.print("DriveOnHeadingCommand ended");
         }
-        System.out.println(" at distance " + driveSubsystem.getEncoderDistanceInches()
+        System.out.println(" at distance " + driveSubsystem.getEncoderDistanceCm()
             + ", on heading " + driveSubsystem.getHeading()
             + ", in " + runTime + "s");
 

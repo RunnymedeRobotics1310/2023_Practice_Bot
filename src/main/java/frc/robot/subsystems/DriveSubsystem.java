@@ -5,11 +5,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -35,8 +33,9 @@ public class DriveSubsystem extends SubsystemBase {
     private double            leftSpeed                = 0;
     private double            rightSpeed               = 0;
 
-    private ADXRS450_Gyro     adxrs450Gyro             = null;
     private AHRS              navXGyro                 = null;
+    private double            zeroX                    = 0;
+    private double            zeroY                    = 0;
 
     private double            gyroHeadingOffset        = 0;
 
@@ -70,12 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
         // Setting both encoders to 0
         resetEncoders();
 
-        if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
-            navXGyro = new AHRS();
-        }
-        else {
-            adxrs450Gyro = new ADXRS450_Gyro();
-        }
+        navXGyro = new AHRS();
     }
 
     /**
@@ -88,12 +82,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         gyroHeadingOffset = 0;
 
-        if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
-            navXGyro.calibrate();
-        }
-        else {
-            adxrs450Gyro.calibrate();
-        }
+        navXGyro.calibrate();
     }
 
     /**
@@ -146,29 +135,15 @@ public class DriveSubsystem extends SubsystemBase {
 
     private double getRawGyroAngle(GyroAxis gyroAxis) {
 
-        if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
-            switch (gyroAxis) {
-            case YAW:
-                return navXGyro.getAngle();
-            case PITCH:
-                return navXGyro.getPitch();
-            case ROLL:
-                return navXGyro.getRoll();
-            default:
-                return 0;
-            }
-        }
-        else {
-            switch (gyroAxis) {
-            case YAW:
-                return adxrs450Gyro.getAngle();
-            case PITCH:
-                return 0;
-            case ROLL:
-                return 0;
-            default:
-                return 0;
-            }
+        switch (gyroAxis) {
+        case YAW:
+            return navXGyro.getAngle();
+        case PITCH:
+            return navXGyro.getPitch();
+        case ROLL:
+            return navXGyro.getRoll();
+        default:
+            return 0;
         }
     }
 
@@ -185,10 +160,15 @@ public class DriveSubsystem extends SubsystemBase {
         return (getLeftEncoder() + getRightEncoder()) / 2;
     }
 
-    public double getEncoderDistanceInches() {
+    public double getEncoderDistanceCm() {
 
-        // FIXME: If using a NavX, pull the distance estimate off the NavX gyro.
-        return getAverageEncoderCounts() * DriveConstants.INCHES_PER_ENCODER_COUNT;
+        // FIXME: Use the NavX distance for now, but change this to encoder distance when possible
+        double xCm = (navXGyro.getDisplacementX() - zeroX) * 100;
+        double yCm = (navXGyro.getDisplacementY() - zeroY) * 100;
+
+        return Math.round(Math.sqrt(xCm * xCm + yCm * yCm));
+
+        // return getAverageEncoderCounts() * DriveConstants.INCHES_PER_ENCODER_COUNT;
     }
 
     /**
@@ -211,6 +191,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     /** Resets the drive encoders to currently read a position of 0. */
     public void resetEncoders() {
+
+        // FIXME: This routine captures the current NavX position (x, y)
+        // which is used in the getDistanceCm.
+        zeroX = navXGyro.getDisplacementX();
+        zeroY = navXGyro.getDisplacementY();
+
         // rightEncoder.setPosition(0);
         // leftEncoder.setPosition(0);
 
@@ -260,22 +246,17 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Right Encoder", getRightEncoder());
         SmartDashboard.putNumber("Left Encoder", getLeftEncoder());
 
-        SmartDashboard.putNumber("Distance (inches)", getEncoderDistanceInches());
+        SmartDashboard.putNumber("Distance (cm)", getEncoderDistanceCm());
 
         SmartDashboard.putNumber("Ultrasonic Voltage", ultrasonicDistanceSensor.getVoltage());
         SmartDashboard.putNumber("Ultrasonic Distance (cm)", getUltrasonicDistanceCm());
 
-        if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
-            SmartDashboard.putData("Gyro", navXGyro);
+        SmartDashboard.putData("Gyro", navXGyro);
 
-            // Put the displacements on the smartDashboard for testing (round to nearest cm)
-            SmartDashboard.putNumber("NavX: X (m)", Math.round(navXGyro.getDisplacementX() * 100) / 100d);
-            SmartDashboard.putNumber("NavX: Y (m)", Math.round(navXGyro.getDisplacementY() * 100) / 100d);
-            SmartDashboard.putNumber("NavX: Z (m)", Math.round(navXGyro.getDisplacementZ() * 100) / 100d);
-        }
-        else {
-            SmartDashboard.putData("Gyro", adxrs450Gyro);
-        }
+        // Put the displacements on the smartDashboard for testing (round to nearest cm)
+        SmartDashboard.putNumber("NavX: X (m)", Math.round(navXGyro.getDisplacementX() * 100));
+        SmartDashboard.putNumber("NavX: Y (m)", Math.round(navXGyro.getDisplacementY() * 100));
+        SmartDashboard.putNumber("NavX: Z (m)", Math.round(navXGyro.getDisplacementZ() * 100));
 
         SmartDashboard.putNumber("Gyro Heading", getHeading());
         SmartDashboard.putNumber("Gyro Pitch", getPitch());

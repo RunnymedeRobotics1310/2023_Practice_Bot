@@ -63,10 +63,6 @@ public final class Constants {
             // Assumes the encoders are directly mounted on the wheel shafts
             (ROBOT_WHEEL_DIAMETER_INCHES * Math.PI) / ENCODER_COUNTS_PER_REVOLUTION;
 
-        public static final String  GYRO_TYPE_NAVX                = "NAV_X";
-        public static final String  GYRO_TYPE_ADXRS450            = "ADXRS_450";
-        public static final String  GYRO_TYPE                     = GYRO_TYPE_NAVX;
-
         public static final boolean GYRO_REVERSED                 = false;
     }
 
