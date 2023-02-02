@@ -15,21 +15,30 @@ import frc.robot.Constants.DriveConstants;
 public class DriveSubsystem extends SubsystemBase {
 
     // The motors on the left side of the drive.
-    private final TalonSRX    leftPrimaryMotor   = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT);
-    private final TalonSRX    leftFollowerMotor  = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT + 1);
+    private final TalonSRX    leftPrimaryMotor         = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT);
+    private final TalonSRX    leftFollowerMotor        = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT + 1);
 
     // The motors on the right side of the drive.
-    private final TalonSRX    rightPrimaryMotor  = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT);
-    private final TalonSRX    rightFollowerMotor = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT + 1);
-    private final AnalogInput distanceSensor     = new AnalogInput(0);
+    private final TalonSRX    rightPrimaryMotor        = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT);
+    private final TalonSRX    rightFollowerMotor       = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT + 1);
 
-    private double            leftSpeed          = 0;
-    private double            rightSpeed         = 0;
+    // Conversion from volts to distance in cm
+    // Volts distance
+    // 0.12 30.5 cm
+    // 2.245 609.6 cm
+    private final AnalogInput ultrasonicDistanceSensor = new AnalogInput(0);
 
-    private ADXRS450_Gyro     adxrs450Gyro       = null;
-    private AHRS              navXGyro           = null;
+    private final double      ULTRASONIC_M             = (609.6 - 30.5) / (2.245 - .12);
+    private final double      ULTRASONIC_B             = 609.6 - ULTRASONIC_M * 2.245;
 
-    private double            gyroHeadingOffset  = 0;
+
+    private double            leftSpeed                = 0;
+    private double            rightSpeed               = 0;
+
+    private ADXRS450_Gyro     adxrs450Gyro             = null;
+    private AHRS              navXGyro                 = null;
+
+    private double            gyroHeadingOffset        = 0;
 
     private enum GyroAxis {
         YAW, PITCH, ROLL
@@ -210,6 +219,14 @@ public class DriveSubsystem extends SubsystemBase {
         // then return the delta from that value on all subsequent reads
     }
 
+    public double getUltrasonicDistanceCm() {
+
+        double ultrasonicVoltage = ultrasonicDistanceSensor.getVoltage();
+
+        double distanceCm        = ULTRASONIC_M * ultrasonicVoltage + ULTRASONIC_B;
+
+        return Math.round(distanceCm);
+    }
 
     /**
      * Set the left and right speed of the primary and follower motors
@@ -245,7 +262,8 @@ public class DriveSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("Distance (inches)", getEncoderDistanceInches());
 
-        SmartDashboard.putNumber("AnalogInput", distanceSensor.getVoltage());
+        SmartDashboard.putNumber("Ultrasonic Voltage", ultrasonicDistanceSensor.getVoltage());
+        SmartDashboard.putNumber("Ultrasonic Distance (cm)", getUltrasonicDistanceCm());
 
         if (Constants.DriveConstants.GYRO_TYPE == Constants.DriveConstants.GYRO_TYPE_NAVX) {
             SmartDashboard.putData("Gyro", navXGyro);
