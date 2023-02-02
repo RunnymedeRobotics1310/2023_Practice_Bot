@@ -18,6 +18,7 @@ import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.DriveModeSelector;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -30,6 +31,7 @@ public class RobotContainer {
 
     // The robot's subsystems and commands are defined here...
     private final DriveSubsystem    driveSubsystem                = new DriveSubsystem();
+    private final VisionSubsystem   visionSubsystem               = new VisionSubsystem();
 
     // A set of choosers for autonomous patterns
     SendableChooser<String>         startingPositionChooser       = new SendableChooser<>();
@@ -51,7 +53,7 @@ public class RobotContainer {
     public RobotContainer() {
 
         // Initialize all Subsystem default commands.
-        driveSubsystem.setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector));
+        driveSubsystem.setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector, visionSubsystem));
 
         // Initialize the autonomous choosers
         initAutoSelectors();
