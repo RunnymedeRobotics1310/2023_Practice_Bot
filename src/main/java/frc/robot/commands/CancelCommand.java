@@ -11,6 +11,8 @@ public class CancelCommand extends CommandBase {
 
     private final DriveSubsystem driveSubsystem;
 
+    private long                 startTime = 0;
+
     /**
      * Cancel the commands running on all subsystems.
      *
@@ -23,15 +25,26 @@ public class CancelCommand extends CommandBase {
 
     @Override
     public void initialize() {
+
         System.out.println("Cancel Command started.");
 
         driveSubsystem.stop();
+
+        startTime = System.currentTimeMillis();
+
+        addRequirements(driveSubsystem);
     }
 
     @Override
     public boolean isFinished() {
-        // This command is always finished after initializing.
-        return true;
+
+        // Wait 1/4 second before finishing.
+        // Allow time for the robot to stop moving
+        if (System.currentTimeMillis() - startTime > 250) {
+            return true;
+        }
+
+        return false;
     }
 
 }

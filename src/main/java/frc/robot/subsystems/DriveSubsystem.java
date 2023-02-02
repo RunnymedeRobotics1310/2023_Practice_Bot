@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -13,31 +14,33 @@ import frc.robot.Constants.DriveConstants;
 public class DriveSubsystem extends SubsystemBase {
 
     // The motors on the left side of the drive.
-    private final TalonSRX    leftPrimaryMotor         = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT);
-    private final TalonSRX    leftFollowerMotor        = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT + 1);
+    private final TalonSRX     leftPrimaryMotor         = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT);
+    private final TalonSRX     leftFollowerMotor        = new TalonSRX(DriveConstants.LEFT_MOTOR_PORT + 1);
 
     // The motors on the right side of the drive.
-    private final TalonSRX    rightPrimaryMotor        = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT);
-    private final TalonSRX    rightFollowerMotor       = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT + 1);
+    private final TalonSRX     rightPrimaryMotor        = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT);
+    private final TalonSRX     rightFollowerMotor       = new TalonSRX(DriveConstants.RIGHT_MOTOR_PORT + 1);
+
+    private final DigitalInput targetSensor             = new DigitalInput(0);
 
     // Conversion from volts to distance in cm
     // Volts distance
     // 0.12 30.5 cm
     // 2.245 609.6 cm
-    private final AnalogInput ultrasonicDistanceSensor = new AnalogInput(0);
+    private final AnalogInput  ultrasonicDistanceSensor = new AnalogInput(0);
 
-    private final double      ULTRASONIC_M             = (609.6 - 30.5) / (2.245 - .12);
-    private final double      ULTRASONIC_B             = 609.6 - ULTRASONIC_M * 2.245;
+    private final double       ULTRASONIC_M             = (609.6 - 30.5) / (2.245 - .12);
+    private final double       ULTRASONIC_B             = 609.6 - ULTRASONIC_M * 2.245;
 
 
-    private double            leftSpeed                = 0;
-    private double            rightSpeed               = 0;
+    private double             leftSpeed                = 0;
+    private double             rightSpeed               = 0;
 
-    private AHRS              navXGyro                 = null;
-    private double            zeroX                    = 0;
-    private double            zeroY                    = 0;
+    private AHRS               navXGyro                 = new AHRS();
+    private double             zeroX                    = 0;
+    private double             zeroY                    = 0;
 
-    private double            gyroHeadingOffset        = 0;
+    private double             gyroHeadingOffset        = 0;
 
     private enum GyroAxis {
         YAW, PITCH, ROLL
@@ -235,6 +238,10 @@ public class DriveSubsystem extends SubsystemBase {
     /** Safely stop the subsystem from moving */
     public void stop() {
         setMotorSpeeds(0, 0);
+    }
+
+    public boolean isTargetDetected() {
+        return !targetSensor.get();
     }
 
     @Override

@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class DriveOnHeadingCommand extends CommandBase {
+public class DriveToTargetCommand extends CommandBase {
 
     final double                 factor         = 0.01;
 
@@ -27,7 +27,7 @@ public class DriveOnHeadingCommand extends CommandBase {
      * Use a positive number even if traveling backwards
      * @param driveSubsystem
      */
-    public DriveOnHeadingCommand(double heading, double speed, double distanceCm, DriveSubsystem driveSubsystem) {
+    public DriveToTargetCommand(double heading, double speed, double distanceCm, DriveSubsystem driveSubsystem) {
         this(heading, speed, distanceCm, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem);
     }
 
@@ -41,7 +41,7 @@ public class DriveOnHeadingCommand extends CommandBase {
      * @param timeoutSeconds to stop this command if the distance has not been reached
      * @param driveSubsystem
      */
-    public DriveOnHeadingCommand(double heading, double speed, double distanceCm, double timeoutSeconds,
+    public DriveToTargetCommand(double heading, double speed, double distanceCm, double timeoutSeconds,
         DriveSubsystem driveSubsystem) {
 
         this.heading        = heading;
@@ -110,6 +110,10 @@ public class DriveOnHeadingCommand extends CommandBase {
 
         // Check the timeout
         if ((System.currentTimeMillis() - initializeTime) / 1000d > timeoutSeconds) {
+            return true;
+        }
+
+        if (driveSubsystem.isTargetDetected()) {
             return true;
         }
 

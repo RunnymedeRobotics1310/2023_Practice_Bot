@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.commands.drive.DriveOnHeadingCommand;
+import frc.robot.commands.drive.DriveToTargetCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AutonomousCommand extends SequentialCommandGroup {
@@ -23,6 +25,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
     private String              exitZoneAction         = null;
     private String              secondGamePieceScoring = null;
     private String              balanceAction          = null;
+    private DriveSubsystem      driveSubsystem         = null;
 
 
     public AutonomousCommand(DriveSubsystem driveSubsystem,
@@ -32,6 +35,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
         SendableChooser<String> exitZoneActionChooser,
         SendableChooser<String> secondGamePieceScoringChooser,
         SendableChooser<String> balanceChooser) {
+
+        this.driveSubsystem = driveSubsystem;
 
         // Default is to do nothing.
         // If more commands are added, the instant command will end and
@@ -166,9 +171,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
             // Back up out of zone
         }
         else {
+            addCommands(new DriveOnHeadingCommand(0, 0.5, 400, 2.5, driveSubsystem));
+            addCommands(new DriveToTargetCommand(0, 0.1, 400, 10, driveSubsystem));
 
-            // FIXME:
-            // drive forward out of the zone
         }
 
         currentZone = ZONE_IN_FIELD;

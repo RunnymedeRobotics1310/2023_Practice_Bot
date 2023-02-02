@@ -112,10 +112,17 @@ public class RobotContainer {
 
         // Example using the POV to Drive on Heading at .5 speed for 50cm.
         new Trigger(() -> (driverController.getPOV() == 0))
-            .onTrue(new DriveOnHeadingCommand(0, .5, 50, driveSubsystem));
+            .onTrue(new DriveOnHeadingCommand(0, .5, 400, driveSubsystem));
 
         new Trigger(() -> (driverController.getPOV() == 90))
-            .onTrue(new DriveOnHeadingCommand(90, .5, 50, driveSubsystem));
+            .onTrue(new DriveOnHeadingCommand(90, .5, 400, driveSubsystem));
+
+        new Trigger(() -> (driverController.getPOV() == 180))
+            .onTrue(new DriveOnHeadingCommand(0, -.5, 400, driveSubsystem));
+
+        new Trigger(() -> (driverController.getPOV() == 270))
+            .onTrue(new DriveOnHeadingCommand(270, .5, 400, driveSubsystem));
+
 
         // ... etc for 180, 270.
     }
