@@ -62,6 +62,8 @@ public class RobotContainer {
 
     private void initAutoSelectors() {
 
+        // FIXME: consider moving all of the choosers to their own classes.
+
         startingPositionChooser.setDefaultOption(AutoConstants.AUTO_START_TOP, AutoConstants.AUTO_START_TOP);
         SmartDashboard.putData(startingPositionChooser);
         startingPositionChooser.addOption(AutoConstants.AUTO_START_MID, AutoConstants.AUTO_START_MID);
