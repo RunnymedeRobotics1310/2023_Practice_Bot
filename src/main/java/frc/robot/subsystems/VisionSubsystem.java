@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionSubsystem extends SubsystemBase {
 
-  private static final long LED_MODE_PIPELINE = 0;
-  private static final long LED_MODE_OFF      = 1;
-  private static final long LED_MODE_BLINK    = 2;
-  private static final long LED_MODE_ON       = 3;
+  private static final long LED_MODE_PIPELINE    = 0;
+  private static final long LED_MODE_OFF         = 1;
+  private static final long LED_MODE_BLINK       = 2;
+  private static final long LED_MODE_ON          = 3;
 
-  private static final long CAM_MODE_VISION = 0;
-  private static final long CAM_MODE_DRIVER = 1;
+  private static final long CAM_MODE_VISION      = 0;
+  private static final long CAM_MODE_DRIVER      = 1;
 
   // configure more pipelines here
   private static final long PIPELINE_CONE_DETECT = 0;
@@ -22,61 +22,67 @@ public class VisionSubsystem extends SubsystemBase {
 
 
   // calibration data
-  private double[] topLeft = new double[2];
-  private double[] topRight = new double[2];
-  private double[] bottomRight = new double[2];
-  private double[] bottomLeft = new double[2];
+  private double[]          topLeft              = new double[2];
+  private double[]          topRight             = new double[2];
+  private double[]          bottomRight          = new double[2];
+  private double[]          bottomLeft           = new double[2];
 
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  NetworkTable              table                = NetworkTableInstance.getDefault().getTable("limelight");
 
   // inputs/configs
-  NetworkTableEntry ledMode = table.getEntry("ledMode");
-  NetworkTableEntry camMode = table.getEntry("camMode");
-  NetworkTableEntry pipeline = table.getEntry("camMode");
+  NetworkTableEntry         ledMode              = table.getEntry("ledMode");
+  NetworkTableEntry         camMode              = table.getEntry("camMode");
+  NetworkTableEntry         pipeline             = table.getEntry("camMode");
 
   // output
-  NetworkTableEntry tx = table.getEntry("tx");
-  NetworkTableEntry ty = table.getEntry("ty");
-  NetworkTableEntry ta = table.getEntry("ta");
-  NetworkTableEntry tl = table.getEntry("tl");
+  NetworkTableEntry         tx                   = table.getEntry("tx");
+  NetworkTableEntry         ty                   = table.getEntry("ty");
+  NetworkTableEntry         ta                   = table.getEntry("ta");
+  NetworkTableEntry         tl                   = table.getEntry("tl");
 
   /**
    * Tell the vision subsystem the coordinates that it can see (on the floor).
+   * 
    * <pre>
    * {0, 0} corresponds to the ground directly at the front bumper in the center of the robot
    * {-10, 0} corresponds to a location against the front bumper 10cm to the left of the robot center
    * {10, 0} corresponds to a location against the front bumper 10cm to the right of the robot center
    * {10, 10} corresponds to a location 10cm away from the front bumper of the robot, 10cm to the right of center
    * </pre>
+   * 
    * etc.
    * Using these values, set the four corners of the field of view of the limelight
+   * 
    * @param topLeft
    * @param topRight
    * @param bottomRight
    * @param bottomLeft
    */
   public void calibrateVision(double[] topLeft, double[] topRight, double[] bottomRight, double[] bottomLeft) {
-    this.topLeft = topLeft;
-    this.topRight = topRight;
+    this.topLeft     = topLeft;
+    this.topRight    = topRight;
     this.bottomRight = bottomRight;
-    this.bottomLeft = bottomLeft;
+    this.bottomLeft  = bottomLeft;
   }
 
   @Override
   public void periodic() {
     // read values periodically and post to smart dashboard periodically
-    SmartDashboard.putNumber("Limelight Target X Coordinate",tx.getDouble(-1.0));
-    SmartDashboard.putNumber("Limelight Target Y Coordinate",ty.getDouble(-1.0));
-    SmartDashboard.putNumber("Limelight Target Area Percentage",ta.getDouble(-1.0));
-    SmartDashboard.putNumber("Limelight Target L value (whatever that is",ta.getDouble(-1.0));
+    SmartDashboard.putNumber("Limelight Target X Coordinate", tx.getDouble(-1.0));
+    SmartDashboard.putNumber("Limelight Target Y Coordinate", ty.getDouble(-1.0));
+    SmartDashboard.putNumber("Limelight Target Area Percentage", ta.getDouble(-1.0));
+    SmartDashboard.putNumber("Limelight Target L value (whatever that is", ta.getDouble(-1.0));
     SmartDashboard.putNumber("Limelight Cam Mode", camMode.getInteger(-1L));
     SmartDashboard.putNumber("Limelight LED mode", ledMode.getInteger(-1L));
     SmartDashboard.putNumber("Limelight Pipeline", pipeline.getInteger(-1L));
+    SmartDashboard.putBoolean("Cone Targed Acquired", isConeTargetAcquired());
+    SmartDashboard.putBoolean("Cube Targed Acquired", isCubeTargetAcquired());
   }
 
   /**
    * Get the limelight coordinates for the target
    * (i.e. with respect to the limelight origin, NOT the robot!!)
+   * 
    * @return limelight target coordinates
    */
   private double[] getTarget() {
@@ -148,19 +154,21 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getTargetOffset() {
-    // todo: fixme: do proper trigonometry and compute the offset in 
+    // todo: fixme: do proper trigonometry and compute the offset in
     // degrees between the target and "straight ahead".
     // For now, the code will just return -10 if it's to the left of
     // center, +10 if it's to the right of center, but we should be
     // able to be much more precise than this
     if (isConeTargetAcquired() || isCubeTargetAcquired()) {
-      // note... we MIGHT switch between having a valid target and not 
-      // having a valid target between the is*TargetAcquired() and the 
-      // subsequent call to getTarget().  Measure to see if this is a 
+      // note... we MIGHT switch between having a valid target and not
+      // having a valid target between the is*TargetAcquired() and the
+      // subsequent call to getTarget(). Measure to see if this is a
       // problem, and if so, code more defensively.
       double[] tgt = getTarget();
-      if (tgt[0] < 0) return -10.0;
-      if (tgt[0] > 0) return 10.0;
+      if (tgt[0] < 0)
+        return -10.0;
+      if (tgt[0] > 0)
+        return 10.0;
       return 0.0;
     }
     else {
