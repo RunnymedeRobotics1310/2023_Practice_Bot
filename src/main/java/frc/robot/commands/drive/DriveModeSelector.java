@@ -9,9 +9,9 @@ public class DriveModeSelector {
     public SendableChooser<DriveMode> driveModeChooser;
     {
         driveModeChooser = new SendableChooser<DriveMode>();
-        driveModeChooser.setDefaultOption("Arcade", DriveMode.ARCADE);
+        driveModeChooser.addOption("Arcade", DriveMode.ARCADE);
         driveModeChooser.addOption("Tank", DriveMode.TANK);
-        driveModeChooser.addOption("Quentin", DriveMode.QUENTIN);
+        driveModeChooser.setDefaultOption("Quentin", DriveMode.QUENTIN);
 
         SmartDashboard.putData("Drive Mode", driveModeChooser);
 
