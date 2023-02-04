@@ -7,7 +7,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.VisionSubsystem.VisionTarget;
+import frc.robot.subsystems.VisionSubsystem.VisionTargetType;
 
 public class DriveToCubeCommand extends CommandBase {
 
@@ -71,7 +71,7 @@ public class DriveToCubeCommand extends CommandBase {
 
         initializeTime = System.currentTimeMillis();
 
-        if (visionSubsystem.getCurrentVisionTarget() != VisionTarget.CUBE) {
+        if (visionSubsystem.getCurrentVisionTargetType() != VisionTargetType.CUBE) {
             targetDelaySec = VisionConstants.TARGET_SWITCH_TIME_SEC;
         }
         else {
@@ -94,10 +94,10 @@ public class DriveToCubeCommand extends CommandBase {
             return;
         }
 
-        if (visionSubsystem.isCubeTargetAcquired()) {
+        if (visionSubsystem.isVisionTargetFound()) {
 
             // FIXME: Is this correct - how do we get the angle to the target?
-            lastKnownTargetHeading  = driveSubsystem.getHeading() + visionSubsystem.getTargetOffset();
+            lastKnownTargetHeading  = driveSubsystem.getHeading() + visionSubsystem.getTargetAngleOffset();
 
             lastKnownTargetHeading %= 360.0d;
 
@@ -121,9 +121,10 @@ public class DriveToCubeCommand extends CommandBase {
         }
 
         // Track the last known target heading.
+        // Determine the error between the current heading and the last known target heading
+
         double currentHeading = driveSubsystem.getHeading();
 
-        // Determine the error between the current heading and the last known target heading
         double error          = lastKnownTargetHeading - currentHeading;
 
         if (error > 180) {
@@ -132,7 +133,6 @@ public class DriveToCubeCommand extends CommandBase {
         else if (error < -180) {
             error += 360;
         }
-
 
         // FIXME: Should the robot slow down if it knows how far to the target
         // Note: cubes are not as sensitive as cones which could be tipped over.

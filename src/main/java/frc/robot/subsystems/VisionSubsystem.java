@@ -8,43 +8,44 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionSubsystem extends SubsystemBase {
 
-    public enum VisionTarget {
+    public enum VisionTargetType {
         CUBE, CONE, NONE
     };
 
-    private static final long LED_MODE_PIPELINE    = 0;
-    private static final long LED_MODE_OFF         = 1;
-    private static final long LED_MODE_BLINK       = 2;
-    private static final long LED_MODE_ON          = 3;
+    private static final long LED_MODE_PIPELINE       = 0;
+    private static final long LED_MODE_OFF            = 1;
+    private static final long LED_MODE_BLINK          = 2;
+    private static final long LED_MODE_ON             = 3;
 
-    private static final long CAM_MODE_VISION      = 0;
-    private static final long CAM_MODE_DRIVER      = 1;
+    private static final long CAM_MODE_VISION         = 0;
+    private static final long CAM_MODE_DRIVER         = 1;
 
     // configure more pipelines here
-    private static final long PIPELINE_CONE_DETECT = 0;
-    private static final long PIPELINE_CUBE_DETECT = 1;
+    private static final long PIPELINE_CONE_DETECT    = 0;
+    private static final long PIPELINE_CUBE_DETECT    = 1;
 
 
     // calibration data
-    private double[]          topLeft              = new double[2];
-    private double[]          topRight             = new double[2];
-    private double[]          bottomRight          = new double[2];
-    private double[]          bottomLeft           = new double[2];
+    private double[]          topLeft                 = new double[2];
+    private double[]          topRight                = new double[2];
+    private double[]          bottomRight             = new double[2];
+    private double[]          bottomLeft              = new double[2];
 
-    NetworkTable              table                = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable              table                   = NetworkTableInstance.getDefault().getTable("limelight");
 
     // inputs/configs
-    NetworkTableEntry         ledMode              = table.getEntry("ledMode");
-    NetworkTableEntry         camMode              = table.getEntry("camMode");
-    NetworkTableEntry         pipeline             = table.getEntry("pipeline");
+    NetworkTableEntry         ledMode                 = table.getEntry("ledMode");
+    NetworkTableEntry         camMode                 = table.getEntry("camMode");
+    NetworkTableEntry         pipeline                = table.getEntry("pipeline");
 
     // output
-    NetworkTableEntry         tx                   = table.getEntry("tx");
-    NetworkTableEntry         ty                   = table.getEntry("ty");
-    NetworkTableEntry         ta                   = table.getEntry("ta");
-    NetworkTableEntry         tl                   = table.getEntry("tl");
+    NetworkTableEntry         tv                      = table.getEntry("tv");
+    NetworkTableEntry         tx                      = table.getEntry("tx");
+    NetworkTableEntry         ty                      = table.getEntry("ty");
+    NetworkTableEntry         ta                      = table.getEntry("ta");
+    NetworkTableEntry         tl                      = table.getEntry("tl");
 
-    private VisionTarget      currentVisionTarget  = VisionTarget.NONE;
+    private VisionTargetType  currentVisionTargetType = VisionTargetType.NONE;
 
     /**
      * Tell the vision subsystem the coordinates that it can see (on the floor).
@@ -73,7 +74,9 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
         // read values periodically and post to smart dashboard periodically
+        SmartDashboard.putBoolean("Limelight Target Found", tv.getDouble(-1.0) == 1);
         SmartDashboard.putNumber("Limelight Target X Coordinate", tx.getDouble(-1.0));
         SmartDashboard.putNumber("Limelight Target Y Coordinate", ty.getDouble(-1.0));
         SmartDashboard.putNumber("Limelight Target Area Percentage", ta.getDouble(-1.0));
@@ -102,15 +105,15 @@ public class VisionSubsystem extends SubsystemBase {
         return ta.getDouble(-1.0);
     }
 
-    public VisionTarget getCurrentVisionTarget() {
-        return currentVisionTarget;
+    public VisionTargetType getCurrentVisionTargetType() {
+        return currentVisionTargetType;
     }
 
-    public void setVisionTarget(VisionTarget visionTarget) {
+    public void setVisionTargetType(VisionTargetType visionTargetType) {
 
-        currentVisionTarget = visionTarget;
+        currentVisionTargetType = visionTargetType;
 
-        switch (visionTarget) {
+        switch (visionTargetType) {
         case CONE:
             setModeConeAcquisition();
             break;
@@ -120,10 +123,28 @@ public class VisionSubsystem extends SubsystemBase {
             break;
 
         default:
-            System.out.println("Invalid value used for VisionSubsystem.setVisionTarget("
-                + visionTarget + ")");
+            System.out.println("Invalid value used for "
+                + "VisionSubsystem.setVisionTargetType("
+                + visionTargetType + ")");
         }
 
+    }
+
+    /**
+     * Get the Target Angle Offset in degrees
+     * <p>
+     * Check whether a target is acquired using {@link #isVisionTargetFound()}
+     *
+     * @return degrees in horizontal angle offset from the current crosshairs.
+     * or {@code 0} if no target is currently found.
+     */
+    public double getTargetAngleOffset() {
+
+        if (!isVisionTargetFound()) {
+            return 0;
+        }
+
+        return tx.getDouble(0);
     }
 
     public void setModeConeAcquisition() {
@@ -163,9 +184,18 @@ public class VisionSubsystem extends SubsystemBase {
         return true;
     }
 
+    public boolean isVisionTargetFound() {
+        return tv.getDouble(-1) == 1;
+    }
+
     public boolean isCubeTargetAcquired() {
         // todo: fixme
         if (PIPELINE_CUBE_DETECT != pipeline.getInteger(-1)) {
+            return false;
+        }
+
+        // Check that a target it acquired.
+        if (!isVisionTargetFound()) {
             return false;
         }
 

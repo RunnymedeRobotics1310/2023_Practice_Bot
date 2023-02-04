@@ -74,6 +74,6 @@ public final class Constants {
     public static final class VisionConstants {
 
         /** Time to switch pipelines and acquire a new vision target */
-        public static final double TARGET_SWITCH_TIME_SEC = .5;
+        public static final double TARGET_SWITCH_TIME_SEC = .25;
     }
 }
