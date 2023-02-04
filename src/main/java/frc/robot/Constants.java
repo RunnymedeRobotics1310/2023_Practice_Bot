@@ -71,4 +71,9 @@ public final class Constants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
     }
 
+    public static final class VisionConstants {
+
+        /** Time to switch pipelines and acquire a new vision target */
+        public static final double TARGET_SWITCH_TIME_SEC = .5;
+    }
 }
