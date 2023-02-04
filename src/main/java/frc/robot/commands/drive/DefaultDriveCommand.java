@@ -12,6 +12,10 @@ public class DefaultDriveCommand extends CommandBase {
     private final DriveSubsystem    driveSubsystem;
     private final XboxController    driverController;
     private final DriveModeSelector driveModeSelector;
+
+    // FIXME: Why is the vision subsystem being passed to the default drive command.
+    // What are we expecting to do with the vision subsystem?
+    // Please document any ideas here....
     private final VisionSubsystem   visionSubsystem;
 
 
@@ -26,7 +30,7 @@ public class DefaultDriveCommand extends CommandBase {
         this.driverController  = driverController;
         this.driveSubsystem    = driveSubsystem;
         this.driveModeSelector = driveModeSelector;
-        this.visionSubsystem = visionSubsystem;
+        this.visionSubsystem   = visionSubsystem;
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(driveSubsystem);
