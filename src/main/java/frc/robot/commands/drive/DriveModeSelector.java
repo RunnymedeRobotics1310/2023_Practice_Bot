@@ -13,9 +13,9 @@ public class DriveModeSelector {
     // Should we change this to a constructor?
     {
         driveModeChooser = new SendableChooser<DriveMode>();
-        driveModeChooser.setDefaultOption("Arcade", DriveMode.ARCADE);
+        driveModeChooser.addOption("Arcade", DriveMode.ARCADE);
         driveModeChooser.addOption("Tank", DriveMode.TANK);
-        driveModeChooser.addOption("Quentin", DriveMode.QUENTIN);
+        driveModeChooser.setDefaultOption("Quentin", DriveMode.QUENTIN);
 
         SmartDashboard.putData("Drive Mode", driveModeChooser);
     }

@@ -7,12 +7,11 @@ import frc.robot.Constants.DriveConstants.DriveMode;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DefaultDriveCommand extends CommandBase {
-
+    private static final double     DRIVE_FILTER_VALUE = 0.2;
     private final DriveSubsystem    driveSubsystem;
     private final XboxController    driverController;
     private final DriveModeSelector driveModeSelector;
 
-    private final double            DRIVE_FILTER_VALUE = 0.075f;
 
     /**
      * Creates a new ExampleCommand.
@@ -53,7 +52,7 @@ public class DefaultDriveCommand extends CommandBase {
             setMotorSpeedsQuentin();
             break;
         default:
-            setMotorSpeedsArcade();
+            setMotorSpeedsQuentin();
             break;
         }
 
@@ -109,76 +108,38 @@ public class DefaultDriveCommand extends CommandBase {
         /** see {@link RunnymedeGameController}. */
 
         // Filter out low input values to reduce drivetrain drift
-        double leftY      = (Math.abs(driverController.getLeftY()) < DRIVE_FILTER_VALUE) ? 0.0f
-            : driverController.getLeftY();
-        double leftX      = (Math.abs(driverController.getLeftX()) < DRIVE_FILTER_VALUE) ? 0.0f
-            : driverController.getLeftX();
+        double leftY      = getScaledValue(driverController.getLeftY());
+        double leftX      = getScaledValue(driverController.getLeftX());
         double leftSpeed  = leftY * -1 + leftX;
         double rightSpeed = leftY * -1 - leftX;
 
-
-        // handle boost
+        // Boost
         if (driverController.getRightBumper()) {
             driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
         }
         else {
-            // Not sure if this is a good speed!
             driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
         }
     }
 
     private void setMotorSpeedsTank() {
 
-        // TODO: THIS IS NOT CORRECT
-        // FIXME: Please elaborate any comments like the above
-        // How do we know what is not correct?
+        double leftSpeed  = getScaledValue(-driverController.getLeftY());
+        double rightSpeed = getScaledValue(-driverController.getRightY());
 
-        // Filter out low input values to reduce drivetrain drift
-        double  leftY      = (Math.abs(driverController.getLeftY()) < DRIVE_FILTER_VALUE) ? 0.0f
-            : driverController.getLeftY();
-        double  leftX      = (Math.abs(driverController.getLeftX()) < DRIVE_FILTER_VALUE) ? 0.0f
-            : driverController.getLeftX();
-        double  leftSpeed  = leftY * -1 + leftX;
-        double  rightSpeed = leftY * -1 - leftX;
-
-        // Tank drive:
-        // double leftY = -driverController.getRawAxis(1);
-        // double rightY = -driverController.getRawAxis(5);
-        // double leftT = driverController.getRawAxis(2);
-        // double rightT = driverController.getRawAxis(3);
-        boolean boost      = false;
-
+        // Boost
         if (driverController.getRightBumper()) {
-            boost = true;
+            driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
         }
-        // Also tank drive:
-        // if (leftT >0) {
-        // driveSubsystem.setMotorSpeeds(-leftT, leftT)
-        // }
-        // else if (rightT >0) {
-        // driveSubsystem.setMotorSpeeds(rightT, -rightT);
-        // }
+        else {
+            driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
+        }
     }
 
     private void setMotorSpeedsQuentin() {
 
-        double speed = -driverController.getLeftY();
-        if (Math.abs(speed) < .2) {
-            speed = 0;
-        }
-        else {
-            // Scale the range of [0.2-1.0] to [0.0-1.0];
-            speed = ((Math.abs(speed) - .2) / .8) * Math.signum(speed);
-        }
-
-        double turn = driverController.getRightX();
-        if (Math.abs(turn) < .2) {
-            turn = 0;
-        }
-        else {
-            // Scale the range of [0.2-1.0] to [0.0-1.0];
-            turn = ((Math.abs(turn) - .2) / .8) * Math.signum(turn);
-        }
+        double speed = getScaledValue(-driverController.getLeftY());
+        double turn  = getScaledValue(driverController.getRightX());
 
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumber("Turn", turn);
@@ -219,12 +180,24 @@ public class DefaultDriveCommand extends CommandBase {
             rightSpeed = speed - turn;
         }
 
-        // doubles the speed of the robot
+        // Boost
         if (driverController.getRightBumper()) {
             driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
         }
         else {
             driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
         }
+    }
+
+    private static double getScaledValue(double value) {
+
+        if (Math.abs(value) < DRIVE_FILTER_VALUE) {
+            value = 0;
+        }
+        else {
+            // Scale the range of [0.2-1.0] to [0.0-1.0];
+            value = ((Math.abs(value) - DRIVE_FILTER_VALUE) / (1 - DRIVE_FILTER_VALUE)) * Math.signum(value);
+        }
+        return value;
     }
 }
