@@ -5,12 +5,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants.DriveMode;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 public class DefaultDriveCommand extends CommandBase {
     private static final double     DRIVE_FILTER_VALUE = 0.2;
     private final DriveSubsystem    driveSubsystem;
     private final XboxController    driverController;
     private final DriveModeSelector driveModeSelector;
+    private final VisionSubsystem   visionSubsystem;
 
 
     /**
@@ -19,11 +21,12 @@ public class DefaultDriveCommand extends CommandBase {
      * @param driveSubsystem The subsystem used by this command.
      */
     public DefaultDriveCommand(XboxController driverController, DriveSubsystem driveSubsystem,
-        DriveModeSelector driveModeSelector) {
+        DriveModeSelector driveModeSelector, VisionSubsystem visionSubsystem) {
 
         this.driverController  = driverController;
         this.driveSubsystem    = driveSubsystem;
         this.driveModeSelector = driveModeSelector;
+        this.visionSubsystem = visionSubsystem;
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(driveSubsystem);

@@ -18,6 +18,7 @@ import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.DriveModeSelector;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -30,6 +31,7 @@ public class RobotContainer {
 
     // The robot's subsystems and commands are defined here...
     private final DriveSubsystem    driveSubsystem                = new DriveSubsystem();
+    private final VisionSubsystem   visionSubsystem               = new VisionSubsystem();
 
     // A set of choosers for autonomous patterns
     SendableChooser<String>         startingPositionChooser       = new SendableChooser<>();
@@ -51,7 +53,10 @@ public class RobotContainer {
     public RobotContainer() {
 
         // Initialize all Subsystem default commands.
-        driveSubsystem.setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector));
+        driveSubsystem.setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector, visionSubsystem));
+
+        // calibrate subsystems
+        calibrateVision();
 
         // Initialize the autonomous choosers
         initAutoSelectors();
@@ -96,6 +101,29 @@ public class RobotContainer {
         SmartDashboard.putData(balanceChooser);
         balanceChooser.addOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
 
+    }
+
+
+    /**
+     * Tell the vision subsystem the coordinates that it can see (on the floor).
+     * <pre>
+     * {0, 0} corresponds to the ground directly at the front bumper in the center of the robot
+     * {-10, 0} corresponds to a location against the front bumper 10cm to the left of the robot center
+     * {10, 0} corresponds to a location against the front bumper 10cm to the right of the robot center
+     * {10, 10} corresponds to a location 10cm away from the front bumper of the robot, 10cm to the right of center
+     * </pre>
+     * etc.
+     * These values are hard-coded in this call for now.  If in the future the camera moves, they'll have to
+     * be re-calibrated,
+     */
+    private void calibrateVision() {
+      // these values calibrated manually on 2023-02-02. Note - we're ignoring the top half of the field of view for now.
+      final double[] topLeft = {-42.0, 78.5};
+      final double[] topRight = {43, 84};
+      final double[] bottomLeft = {13, 25};
+      final double[] bottomRight = {-13, 22.5};
+
+      visionSubsystem.calibrateVision(topLeft, topRight, bottomLeft, bottomRight);
     }
 
     /**
