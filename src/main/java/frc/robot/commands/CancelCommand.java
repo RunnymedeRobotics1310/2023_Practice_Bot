@@ -21,6 +21,8 @@ public class CancelCommand extends CommandBase {
      */
     public CancelCommand(DriveSubsystem driveSubsystem) {
         this.driveSubsystem = driveSubsystem;
+
+        addRequirements(driveSubsystem);
     }
 
     @Override
@@ -31,8 +33,6 @@ public class CancelCommand extends CommandBase {
         driveSubsystem.stop();
 
         startTime = System.currentTimeMillis();
-
-        addRequirements(driveSubsystem);
     }
 
     @Override
