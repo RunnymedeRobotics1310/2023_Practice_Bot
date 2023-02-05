@@ -12,6 +12,7 @@ import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.GameConstants.Zone;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.commands.drive.DriveToTargetCommand;
+import frc.robot.commands.drive.SetGyroHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AutonomousCommand extends SequentialCommandGroup {
@@ -101,12 +102,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
          * Set the gyro heading if required
          */
         if (currentOrientation == Orientation.FACE_GRID) {
-
-            // FIXME:
-            // set the gyro heading to 180 degrees to match the robot field alignment
-            // zero (North) is always pointing away from the driver station.
-
-            // addCommands(new SetGyroHeadingCommand(180)); <- for example
+            addCommands(new SetGyroHeadingCommand(180, driveSubsystem));
         }
 
         /*
@@ -184,7 +180,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // This command may cause a rotation to heading 0.
         addCommands(new DriveOnHeadingCommand(0, 0.5, 400, 2.5, driveSubsystem));
 
-        currentZone = Zone.FIELD;
+        currentZone        = Zone.FIELD;
+        currentOrientation = Orientation.FACE_FIELD;
 
         /*
          * If a piece is not required, this portion is complete
@@ -207,8 +204,6 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // Rotate to the target
         // Turn on the arm intake (not sure how this works)
         // Drive forward until object is captured
-
-        currentOrientation = Orientation.FACE_FIELD;
     }
 
     /**
