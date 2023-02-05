@@ -72,7 +72,7 @@ public class DriveToCubeCommand extends CommandBase {
         initializeTime = System.currentTimeMillis();
 
         if (visionSubsystem.getCurrentVisionTargetType() != VisionTargetType.CUBE) {
-            targetDelaySec = VisionConstants.TARGET_SWITCH_TIME_SEC;
+            targetDelaySec = VisionConstants.VISION_SWITCH_TIME_SEC;
         }
         else {
             targetDelaySec = 0;

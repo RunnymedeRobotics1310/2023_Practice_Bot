@@ -5,36 +5,39 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.AutoConstants.AutoAction;
+import frc.robot.Constants.AutoConstants.AutoLane;
+import frc.robot.Constants.AutoConstants.Orientation;
+import frc.robot.Constants.GameConstants.GamePiece;
+import frc.robot.Constants.GameConstants.Zone;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.commands.drive.DriveToTargetCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AutonomousCommand extends SequentialCommandGroup {
 
-    private static final String ZONE_AT_GRID           = "At Grid";
-    private static final String ZONE_IN_FIELD          = "At Center of Field";
+    private AutoLane       startingLane           = null;
+    private GamePiece      currentGamePiece       = null;
+    private Orientation    currentOrientation     = null;
+    private Zone           currentZone            = null;
 
-    private String              startingPosition       = null;
-    private String              currentOrientation     = null;
-    private String              currentZone            = null;
+    private Alliance       alliance               = null;
 
-    private Alliance            alliance               = null;
-
-    private String              firstGamePieceScoring  = null;
-    private String              exitZoneAction         = null;
-    private String              secondGamePieceScoring = null;
-    private String              balanceAction          = null;
-    private DriveSubsystem      driveSubsystem         = null;
+    private AutoAction     firstGamePieceScoring  = null;
+    private AutoAction     exitZoneAction         = null;
+    private AutoAction     secondGamePieceScoring = null;
+    private AutoAction     balanceAction          = null;
+    private DriveSubsystem driveSubsystem         = null;
 
 
     public AutonomousCommand(DriveSubsystem driveSubsystem,
-        SendableChooser<String> startingPositionChooser,
-        SendableChooser<String> startingOrientationChooser,
-        SendableChooser<String> firstGamePieceScoringChooser,
-        SendableChooser<String> exitZoneActionChooser,
-        SendableChooser<String> secondGamePieceScoringChooser,
-        SendableChooser<String> balanceChooser) {
+        SendableChooser<AutoLane> startingLaneChooser,
+        SendableChooser<GamePiece> loadedGamePieceChooser,
+        SendableChooser<Orientation> startingOrientationChooser,
+        SendableChooser<AutoAction> firstGamePieceScoringChooser,
+        SendableChooser<AutoAction> exitZoneActionChooser,
+        SendableChooser<AutoAction> secondGamePieceScoringChooser,
+        SendableChooser<AutoAction> balanceChooser) {
 
         this.driveSubsystem = driveSubsystem;
 
@@ -43,7 +46,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // the next command will be executed.
         addCommands(new InstantCommand());
 
-        startingPosition       = startingPositionChooser.getSelected();
+        startingLane           = startingLaneChooser.getSelected();
+        currentGamePiece       = loadedGamePieceChooser.getSelected();
         currentOrientation     = startingOrientationChooser.getSelected();
 
         firstGamePieceScoring  = firstGamePieceScoringChooser.getSelected();
@@ -55,8 +59,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         StringBuilder sb = new StringBuilder();
         sb.append("Auto Selections");
-        sb.append("\n   Starting Postion          :").append(startingPosition);
+        sb.append("\n   Starting Postion          :").append(startingLane);
         sb.append("\n   Starting Orientation      :").append(currentOrientation);
+        sb.append("\n   Loaded Game Piece         :").append(currentGamePiece);
         sb.append("\n   First Game Piece Scoring  :").append(firstGamePieceScoring);
         sb.append("\n   Exit Zone Action          :").append(exitZoneAction);
         sb.append("\n   Second Game Piece Scoring :").append(secondGamePieceScoring);
@@ -67,8 +72,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // If any of these are null, then there was some kind of error.
         // FIXME: Is there anything we can do here?
-        if (startingPosition == null
+        if (startingLane == null
             || currentOrientation == null
+            || currentGamePiece == null
             || firstGamePieceScoring == null
             || exitZoneAction == null
             || secondGamePieceScoring == null
@@ -89,12 +95,12 @@ public class AutonomousCommand extends SequentialCommandGroup {
         }
 
         // The robot always starts next to the grid
-        currentZone = ZONE_AT_GRID;
+        currentZone = Zone.COMMUNITY;
 
         /*
          * Set the gyro heading if required
          */
-        if (currentOrientation.equals(AutoConstants.AUTO_ORIENTATION_FACE_GRID)) {
+        if (currentOrientation == Orientation.FACE_GRID) {
 
             // FIXME:
             // set the gyro heading to 180 degrees to match the robot field alignment
@@ -121,14 +127,20 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // The selector must be set to score low or score mid, otherwise
         // there is nothing to do
 
-        if (!(firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_LOW)
-            || firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CONE)
-            || firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CUBE))) {
+        if (!(firstGamePieceScoring == AutoAction.SCORE_BOTTOM
+            || firstGamePieceScoring == AutoAction.SCORE_MIDDLE
+            || firstGamePieceScoring == AutoAction.SCORE_TOP)) {
             return;
         }
 
-        if (currentOrientation.equals(AutoConstants.AUTO_ORIENTATION_FACE_GRID)) {
+        if (currentOrientation == Orientation.FACE_GRID) {
 
+            switch (currentGamePiece) {
+            case CUBE:
+                break;
+            case CONE:
+                break;
+            }
             // FIXME:
             // Set the arm position (different positions required for cone or cube
             // Drive forward?
@@ -140,8 +152,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
             // When facing the field, only a low delivery is allowed because a piece would be
             // balanced on the bumper
-            if (firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CONE)
-                || firstGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CUBE)) {
+            if (firstGamePieceScoring == AutoAction.SCORE_MIDDLE
+                || firstGamePieceScoring == AutoAction.SCORE_TOP) {
                 System.out.println("Cannot score mid unless facing grid, overriding to score low");
             }
 
@@ -159,30 +171,34 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // An exit zone action must be selected, otherwise do nothing
 
-        if (!(exitZoneAction.equals(AutoConstants.AUTO_LEAVE_ZONE)
-            || exitZoneAction.equals(AutoConstants.AUTO_GRAB_PIECE))) {
+        if (!(exitZoneAction == AutoAction.EXIT_ZONE
+            || exitZoneAction == AutoAction.PICK_UP_CUBE
+            || exitZoneAction == AutoAction.PICK_UP_CONE)) {
             return;
         }
 
         // Start by moving to the center of the field
-        if (currentOrientation.equals(AutoConstants.AUTO_ORIENTATION_FACE_GRID)) {
+        if (currentOrientation == Orientation.FACE_GRID) {
 
             // FIXME:
             // Back up out of zone
         }
         else {
-            addCommands(new DriveOnHeadingCommand(0, 0.5, 400, 2.5, driveSubsystem));
-            addCommands(new DriveToTargetCommand(0, 0.1, 400, 10, driveSubsystem));
 
+            // Drive forward out of the zone
+            addCommands(new DriveOnHeadingCommand(0, 0.5, 400, 2.5, driveSubsystem));
         }
 
-        currentZone = ZONE_IN_FIELD;
+        currentZone = Zone.FIELD;
 
         /*
          * If a piece is not required, this portion is complete
          */
-        if (!exitZoneAction.equals(AutoConstants.AUTO_GRAB_PIECE)) {
-            return;
+        if (!(exitZoneAction == AutoAction.PICK_UP_CONE
+            || exitZoneAction == AutoAction.PICK_UP_CUBE)) {
+
+            addCommands(new DriveToTargetCommand(0, 0.1, 400, 10, driveSubsystem));
+
         }
 
         /*
@@ -197,7 +213,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // Turn on the arm intake (not sure how this works)
         // Drive forward until object is captured
 
-        currentOrientation = AutoConstants.AUTO_ORIENTATION_FACE_FIELD;
+        currentOrientation = Orientation.FACE_FIELD;
     }
 
     /**
@@ -207,15 +223,16 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // If a scoring location is not set, there is nothing to do.
 
-        if (!(secondGamePieceScoring.equals(AutoConstants.AUTO_SCORE_LOW)
-            || secondGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CONE)
-            || secondGamePieceScoring.equals(AutoConstants.AUTO_SCORE_MID_CUBE))) {
+        if (!(secondGamePieceScoring == AutoAction.SCORE_BOTTOM
+            || secondGamePieceScoring == AutoAction.SCORE_MIDDLE
+            || secondGamePieceScoring == AutoAction.SCORE_TOP)) {
             return;
         }
 
         // Check that that grabbing a piece was scheduled
 
-        if (!exitZoneAction.equals(AutoConstants.AUTO_GRAB_PIECE)) {
+        if (!(exitZoneAction == AutoAction.PICK_UP_CONE
+            || exitZoneAction == AutoAction.PICK_UP_CUBE)) {
             System.out.println("*** ERROR *** Cannot deliver a second piece if it was not picked up");
             // Do nothing
             return;
@@ -229,8 +246,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // Drive towards target
         // Drop object
 
-        currentOrientation = AutoConstants.AUTO_ORIENTATION_FACE_GRID;
-        currentZone        = ZONE_AT_GRID;
+        currentOrientation = Orientation.FACE_GRID;
+        currentZone        = Zone.COMMUNITY;
     }
 
     /**
@@ -240,7 +257,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // If the balance command was not selected, there is nothing to do
 
-        if (!balanceAction.equals(AutoConstants.AUTO_BALANCE)) {
+        if (balanceAction != AutoAction.BALANCE) {
             return;
         }
 

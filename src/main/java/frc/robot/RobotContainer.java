@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.AutoConstants.AutoAction;
+import frc.robot.Constants.AutoConstants.AutoLane;
+import frc.robot.Constants.AutoConstants.Orientation;
+import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.OiConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.AutonomousCommand;
@@ -34,12 +37,13 @@ public class RobotContainer {
     private final VisionSubsystem   visionSubsystem               = new VisionSubsystem();
 
     // A set of choosers for autonomous patterns
-    SendableChooser<String>         startingPositionChooser       = new SendableChooser<>();
-    SendableChooser<String>         startingOrientationChooser    = new SendableChooser<>();
-    SendableChooser<String>         firstGamePieceScoringChooser  = new SendableChooser<>();
-    SendableChooser<String>         exitZoneActionChooser         = new SendableChooser<>();
-    SendableChooser<String>         secondGamePieceScoringChooser = new SendableChooser<>();
-    SendableChooser<String>         balanceChooser                = new SendableChooser<>();
+    SendableChooser<AutoLane>       startingLaneChooser           = new SendableChooser<>();
+    SendableChooser<GamePiece>      startingGamePieceChooser      = new SendableChooser<>();
+    SendableChooser<Orientation>    startingOrientationChooser    = new SendableChooser<>();
+    SendableChooser<AutoAction>     firstGamePieceScoringChooser  = new SendableChooser<>();
+    SendableChooser<AutoAction>     exitZoneActionChooser         = new SendableChooser<>();
+    SendableChooser<AutoAction>     secondGamePieceScoringChooser = new SendableChooser<>();
+    SendableChooser<AutoAction>     balanceChooser                = new SendableChooser<>();
 
     // A chooser for the drive mode
     private final DriveModeSelector driveModeSelector             = new DriveModeSelector();
@@ -53,7 +57,8 @@ public class RobotContainer {
     public RobotContainer() {
 
         // Initialize all Subsystem default commands.
-        driveSubsystem.setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector, visionSubsystem));
+        driveSubsystem
+            .setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector, visionSubsystem));
 
         // calibrate subsystems
         calibrateVision();
@@ -69,61 +74,63 @@ public class RobotContainer {
 
         // FIXME: consider moving all of the choosers to their own classes.
 
-        startingPositionChooser.setDefaultOption(AutoConstants.AUTO_START_TOP, AutoConstants.AUTO_START_TOP);
-        SmartDashboard.putData(startingPositionChooser);
-        startingPositionChooser.addOption(AutoConstants.AUTO_START_MID, AutoConstants.AUTO_START_MID);
-        startingPositionChooser.addOption(AutoConstants.AUTO_START_BOTTOM, AutoConstants.AUTO_START_BOTTOM);
+        startingLaneChooser.setDefaultOption("Top", AutoLane.TOP);
+        SmartDashboard.putData("Starting Lane", startingLaneChooser);
+        startingLaneChooser.addOption("Middle", AutoLane.MIDDLE);
+        startingLaneChooser.addOption("Bottom", AutoLane.BOTTOM);
 
-        startingOrientationChooser.setDefaultOption(AutoConstants.AUTO_ORIENTATION_FACE_GRID,
-            AutoConstants.AUTO_ORIENTATION_FACE_GRID);
-        SmartDashboard.putData(startingOrientationChooser);
-        startingOrientationChooser.addOption(AutoConstants.AUTO_ORIENTATION_FACE_FIELD,
-            AutoConstants.AUTO_ORIENTATION_FACE_FIELD);
+        startingOrientationChooser.setDefaultOption("Face Field", Orientation.FACE_FIELD);
+        SmartDashboard.putData("Starting Orientation", startingOrientationChooser);
+        startingOrientationChooser.addOption("Face Grid", Orientation.FACE_GRID);
 
-        firstGamePieceScoringChooser.setDefaultOption(AutoConstants.AUTO_SCORE_LOW, AutoConstants.AUTO_SCORE_LOW);
-        SmartDashboard.putData(firstGamePieceScoringChooser);
-        firstGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID_CONE, AutoConstants.AUTO_SCORE_MID_CONE);
-        firstGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID_CUBE, AutoConstants.AUTO_SCORE_MID_CUBE);
-        firstGamePieceScoringChooser.addOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
+        firstGamePieceScoringChooser.setDefaultOption("Bottom", AutoAction.SCORE_BOTTOM);
+        SmartDashboard.putData("Score First Auto Piece", firstGamePieceScoringChooser);
+        firstGamePieceScoringChooser.addOption("Middle", AutoAction.SCORE_MIDDLE);
+        firstGamePieceScoringChooser.addOption("Top", AutoAction.SCORE_TOP);
 
-        exitZoneActionChooser.setDefaultOption(AutoConstants.AUTO_LEAVE_ZONE, AutoConstants.AUTO_LEAVE_ZONE);
-        SmartDashboard.putData(exitZoneActionChooser);
-        exitZoneActionChooser.addOption(AutoConstants.AUTO_GRAB_PIECE, AutoConstants.AUTO_GRAB_PIECE);
-        exitZoneActionChooser.addOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
+        exitZoneActionChooser.setDefaultOption("Pick up Cube", AutoAction.PICK_UP_CUBE);
+        SmartDashboard.putData("Exit Zone Action", exitZoneActionChooser);
+        exitZoneActionChooser.addOption("Pick up Cone", AutoAction.PICK_UP_CONE);
+        exitZoneActionChooser.addOption("Leave Zone (no Cube)", AutoAction.EXIT_ZONE);
+        exitZoneActionChooser.addOption("Do nothing", AutoAction.DO_NOTHING);
 
-        secondGamePieceScoringChooser.setDefaultOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
-        SmartDashboard.putData(secondGamePieceScoringChooser);
-        secondGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_LOW, AutoConstants.AUTO_SCORE_LOW);
-        secondGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID_CONE, AutoConstants.AUTO_SCORE_MID_CONE);
-        secondGamePieceScoringChooser.addOption(AutoConstants.AUTO_SCORE_MID_CUBE, AutoConstants.AUTO_SCORE_MID_CUBE);
+        secondGamePieceScoringChooser.setDefaultOption("Top", AutoAction.SCORE_TOP);
+        SmartDashboard.putData("Score Second Auto Piece", secondGamePieceScoringChooser);
+        secondGamePieceScoringChooser.addOption("Middle", AutoAction.SCORE_MIDDLE);
+        secondGamePieceScoringChooser.addOption("Bottom", AutoAction.SCORE_BOTTOM);
+        secondGamePieceScoringChooser.addOption("Do not score piece", AutoAction.DO_NOTHING);
 
-        balanceChooser.setDefaultOption(AutoConstants.AUTO_BALANCE, AutoConstants.AUTO_BALANCE);
-        SmartDashboard.putData(balanceChooser);
-        balanceChooser.addOption(AutoConstants.AUTO_DO_NOTHING, AutoConstants.AUTO_DO_NOTHING);
+        balanceChooser.setDefaultOption("Balance", AutoAction.BALANCE);
+        SmartDashboard.putData("Balance", balanceChooser);
+        balanceChooser.addOption("Do not balance", AutoAction.DO_NOTHING);
 
     }
 
 
     /**
      * Tell the vision subsystem the coordinates that it can see (on the floor).
+     *
      * <pre>
      * {0, 0} corresponds to the ground directly at the front bumper in the center of the robot
      * {-10, 0} corresponds to a location against the front bumper 10cm to the left of the robot center
      * {10, 0} corresponds to a location against the front bumper 10cm to the right of the robot center
      * {10, 10} corresponds to a location 10cm away from the front bumper of the robot, 10cm to the right of center
      * </pre>
+     *
      * etc.
-     * These values are hard-coded in this call for now.  If in the future the camera moves, they'll have to
+     * These values are hard-coded in this call for now. If in the future the camera moves, they'll
+     * have to
      * be re-calibrated,
      */
     private void calibrateVision() {
-      // these values calibrated manually on 2023-02-02. Note - we're ignoring the top half of the field of view for now.
-      final double[] topLeft = {-42.0, 78.5};
-      final double[] topRight = {43, 84};
-      final double[] bottomLeft = {13, 25};
-      final double[] bottomRight = {-13, 22.5};
+        // these values calibrated manually on 2023-02-02. Note - we're ignoring the top half of the
+        // field of view for now.
+        final double[] topLeft     = { -42.0, 78.5 };
+        final double[] topRight    = { 43, 84 };
+        final double[] bottomLeft  = { 13, 25 };
+        final double[] bottomRight = { -13, 22.5 };
 
-      visionSubsystem.calibrateVision(topLeft, topRight, bottomLeft, bottomRight);
+        visionSubsystem.calibrateVision(topLeft, topRight, bottomLeft, bottomRight);
     }
 
     /**
@@ -151,8 +158,6 @@ public class RobotContainer {
         new Trigger(() -> (driverController.getPOV() == 270))
             .onTrue(new DriveOnHeadingCommand(270, .5, 400, driveSubsystem));
 
-
-        // ... etc for 180, 270.
     }
 
     /**
@@ -162,8 +167,15 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
 
-        return new AutonomousCommand(driveSubsystem, startingPositionChooser, startingOrientationChooser,
-            firstGamePieceScoringChooser, exitZoneActionChooser, secondGamePieceScoringChooser, balanceChooser);
+        return new AutonomousCommand(
+            driveSubsystem,
+            startingLaneChooser,
+            startingGamePieceChooser,
+            startingOrientationChooser,
+            firstGamePieceScoringChooser,
+            exitZoneActionChooser,
+            secondGamePieceScoringChooser,
+            balanceChooser);
 
     }
 }
