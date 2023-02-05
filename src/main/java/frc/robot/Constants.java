@@ -21,7 +21,7 @@ public final class Constants {
     public static final class GameConstants {
 
         public static enum GamePiece {
-            CUBE, CONE
+            CUBE, CONE, NONE
         };
 
         public static enum ScoringRow {

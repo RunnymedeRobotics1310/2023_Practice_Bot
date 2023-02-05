@@ -162,6 +162,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
             // NOTE: deposit the piece placed on the bumper in the low scoring position using
             // gravity and inertia (or maybe a piston?)
         }
+
+        // Now that the game piece is scored, we do not have a game piece
+        currentGamePiece = GamePiece.NONE;
     }
 
     /**
@@ -177,17 +180,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
             return;
         }
 
-        // Start by moving to the center of the field
-        if (currentOrientation == Orientation.FACE_GRID) {
-
-            // FIXME:
-            // Back up out of zone
-        }
-        else {
-
-            // Drive forward out of the zone
-            addCommands(new DriveOnHeadingCommand(0, 0.5, 400, 2.5, driveSubsystem));
-        }
+        // Drive out of the zone
+        // This command may cause a rotation to heading 0.
+        addCommands(new DriveOnHeadingCommand(0, 0.5, 400, 2.5, driveSubsystem));
 
         currentZone = Zone.FIELD;
 
