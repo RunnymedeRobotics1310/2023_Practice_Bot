@@ -11,9 +11,27 @@ public class DriveOnHeadingCommand extends CommandBase {
     final double                 factor         = 0.01;
 
     private final double         heading, speed, distanceCm, timeoutSeconds;
+    private final boolean        brakeAtEnd;
     private final DriveSubsystem driveSubsystem;
 
     private long                 initializeTime = 0;
+
+    /**
+     * Drive on a specified compass heading (0-360 degrees) for the specified distance in inches.
+     * <p>
+     * This constructor uses the {@link Constants#DEFAULT_COMMAND_TIMEOUT_SECONDS} for the command
+     * timeout and brakeAtEnd {@code true}
+     *
+     * @param heading 0-360 degrees
+     * @param speed in the range 0-1.0 for forward travel, 0 - -1.0 for reverse travel
+     * @param distanceCm for the robot to travel before this command ends.
+     * Use a positive number even if traveling backwards
+     * @param driveSubsystem
+     */
+    public DriveOnHeadingCommand(double heading, double speed, double distanceCm,
+        DriveSubsystem driveSubsystem) {
+        this(heading, speed, distanceCm, true, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem);
+    }
 
     /**
      * Drive on a specified compass heading (0-360 degrees) for the specified distance in inches.
@@ -27,12 +45,15 @@ public class DriveOnHeadingCommand extends CommandBase {
      * Use a positive number even if traveling backwards
      * @param driveSubsystem
      */
-    public DriveOnHeadingCommand(double heading, double speed, double distanceCm, DriveSubsystem driveSubsystem) {
-        this(heading, speed, distanceCm, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem);
+    public DriveOnHeadingCommand(double heading, double speed, double distanceCm, boolean brakeAtEnd,
+        DriveSubsystem driveSubsystem) {
+        this(heading, speed, distanceCm, brakeAtEnd, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem);
     }
 
     /**
-     * Drive on a specified compass heading (0-360 degrees) for the specified distance in cm.
+     * Drive on a specified compass heading (0-360 degrees) for the specified distance in inches.
+     * <p>
+     * This constructor uses the brakeAtEnd {@code true}
      *
      * @param heading 0-360 degrees
      * @param speed in the range 0-1.0 for forward travel, 0 - -1.0 for reverse travel
@@ -43,10 +64,27 @@ public class DriveOnHeadingCommand extends CommandBase {
      */
     public DriveOnHeadingCommand(double heading, double speed, double distanceCm, double timeoutSeconds,
         DriveSubsystem driveSubsystem) {
+        this(heading, speed, distanceCm, true, timeoutSeconds, driveSubsystem);
+    }
+
+    /**
+     * Drive on a specified compass heading (0-360 degrees) for the specified distance in cm.
+     *
+     * @param heading 0-360 degrees
+     * @param speed in the range 0-1.0 for forward travel, 0 - -1.0 for reverse travel
+     * @param distanceCm for the robot to travel before this command ends.
+     * Use a positive number even if traveling backwards
+     * @param brakeAtEnd {@code true} if braking, {@code false} to continue driving
+     * @param timeoutSeconds to stop this command if the distance has not been reached
+     * @param driveSubsystem
+     */
+    public DriveOnHeadingCommand(double heading, double speed, double distanceCm, boolean brakeAtEnd,
+        double timeoutSeconds, DriveSubsystem driveSubsystem) {
 
         this.heading        = heading;
         this.speed          = speed;
         this.distanceCm     = distanceCm;
+        this.brakeAtEnd     = brakeAtEnd;
         this.timeoutSeconds = timeoutSeconds;
         this.driveSubsystem = driveSubsystem;
 
@@ -61,6 +99,7 @@ public class DriveOnHeadingCommand extends CommandBase {
             + " Heading " + heading
             + ", Speed " + speed
             + ", distance " + distanceCm
+            + ", brake at end " + brakeAtEnd
             + ", timeout " + timeoutSeconds);
 
         // Reset the distance to zero.
@@ -130,9 +169,12 @@ public class DriveOnHeadingCommand extends CommandBase {
         }
         System.out.println(" at distance " + driveSubsystem.getEncoderDistanceCm()
             + ", on heading " + driveSubsystem.getHeading()
-            + ", in " + runTime + "s");
+            + ", in " + runTime + "s"
+            + ", brake at end " + brakeAtEnd);
 
-        // Stop the robot
-        driveSubsystem.setMotorSpeeds(0, 0);
+        // Stop the robot if required
+        if (brakeAtEnd) {
+            driveSubsystem.setMotorSpeeds(0, 0);
+        }
     }
 }
