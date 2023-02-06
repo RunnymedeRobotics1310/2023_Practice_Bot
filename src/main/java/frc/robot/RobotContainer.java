@@ -79,6 +79,10 @@ public class RobotContainer {
         startingLaneChooser.addOption("Middle", AutoLane.MIDDLE);
         startingLaneChooser.addOption("Bottom", AutoLane.BOTTOM);
 
+        startingGamePieceChooser.setDefaultOption("Cone", GamePiece.CONE);
+        SmartDashboard.putData("Starting Game Piece", startingGamePieceChooser);
+        startingGamePieceChooser.addOption("Cube", GamePiece.CUBE);
+
         startingOrientationChooser.setDefaultOption("Face Field", Orientation.FACE_FIELD);
         SmartDashboard.putData("Starting Orientation", startingOrientationChooser);
         startingOrientationChooser.addOption("Face Grid", Orientation.FACE_GRID);
@@ -169,6 +173,7 @@ public class RobotContainer {
 
         return new AutonomousCommand(
             driveSubsystem,
+            visionSubsystem,
             startingLaneChooser,
             startingGamePieceChooser,
             startingOrientationChooser,

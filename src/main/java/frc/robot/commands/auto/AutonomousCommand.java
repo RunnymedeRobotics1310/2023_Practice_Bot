@@ -11,27 +11,29 @@ import frc.robot.Constants.AutoConstants.Orientation;
 import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.GameConstants.Zone;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
-import frc.robot.commands.drive.DriveToTargetCommand;
+import frc.robot.commands.drive.DriveToCubeCommand;
 import frc.robot.commands.drive.SetGyroHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 public class AutonomousCommand extends SequentialCommandGroup {
 
-    private AutoLane       startingLane           = null;
-    private GamePiece      currentGamePiece       = null;
-    private Orientation    currentOrientation     = null;
-    private Zone           currentZone            = null;
+    private AutoLane        startingLane           = null;
+    private GamePiece       currentGamePiece       = null;
+    private Orientation     currentOrientation     = null;
+    private Zone            currentZone            = null;
 
-    private Alliance       alliance               = null;
+    private Alliance        alliance               = null;
 
-    private AutoAction     firstGamePieceScoring  = null;
-    private AutoAction     exitZoneAction         = null;
-    private AutoAction     secondGamePieceScoring = null;
-    private AutoAction     balanceAction          = null;
-    private DriveSubsystem driveSubsystem         = null;
+    private AutoAction      firstGamePieceScoring  = null;
+    private AutoAction      exitZoneAction         = null;
+    private AutoAction      secondGamePieceScoring = null;
+    private AutoAction      balanceAction          = null;
+    private DriveSubsystem  driveSubsystem         = null;
+    private VisionSubsystem visionSubsystem        = null;
 
 
-    public AutonomousCommand(DriveSubsystem driveSubsystem,
+    public AutonomousCommand(DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem,
         SendableChooser<AutoLane> startingLaneChooser,
         SendableChooser<GamePiece> loadedGamePieceChooser,
         SendableChooser<Orientation> startingOrientationChooser,
@@ -40,7 +42,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
         SendableChooser<AutoAction> secondGamePieceScoringChooser,
         SendableChooser<AutoAction> balanceChooser) {
 
-        this.driveSubsystem = driveSubsystem;
+        this.driveSubsystem  = driveSubsystem;
+        this.visionSubsystem = visionSubsystem;
 
         // Default is to do nothing.
         // If more commands are added, the instant command will end and
@@ -178,7 +181,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // Drive out of the zone
         // This command may cause a rotation to heading 0.
-        addCommands(new DriveOnHeadingCommand(0, 0.5, 400, 2.5, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(0, 0.5, 400, 2, driveSubsystem));
 
         currentZone        = Zone.FIELD;
         currentOrientation = Orientation.FACE_FIELD;
@@ -186,10 +189,10 @@ public class AutonomousCommand extends SequentialCommandGroup {
         /*
          * If a piece is not required, this portion is complete
          */
-        if (!(exitZoneAction == AutoAction.PICK_UP_CONE
+        if ((exitZoneAction == AutoAction.PICK_UP_CONE
             || exitZoneAction == AutoAction.PICK_UP_CUBE)) {
 
-            addCommands(new DriveToTargetCommand(0, 0.1, 400, 10, driveSubsystem));
+            addCommands(new DriveToCubeCommand(0.2, driveSubsystem, visionSubsystem));
 
         }
 
