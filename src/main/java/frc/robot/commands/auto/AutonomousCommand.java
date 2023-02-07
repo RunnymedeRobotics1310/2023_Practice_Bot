@@ -164,7 +164,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
             // reverse and deposit the starting piece
 
-            double speed = -0.5;
+            double speed = -0.3;
             addCommands(new DriveOnHeadingCommand(0, speed, 50, 0.25, driveSubsystem));
         }
 
