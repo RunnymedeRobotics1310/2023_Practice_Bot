@@ -132,6 +132,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
             return;
         }
 
+
+
         if (currentOrientation == Orientation.FACE_GRID) {
 
             switch (currentGamePiece) {
@@ -156,10 +158,14 @@ public class AutonomousCommand extends SequentialCommandGroup {
                 System.out.println("Cannot score mid unless facing grid, overriding to score low");
             }
 
-            // FIXME:
-            // Drive Backward and forward
+            // Drive Backward
             // NOTE: deposit the piece placed on the bumper in the low scoring position using
             // gravity and inertia (or maybe a piston?)
+
+            // reverse and deposit the starting piece
+
+            double speed = -0.5;
+            addCommands(new DriveOnHeadingCommand(0, speed, 50, 0.25, driveSubsystem));
         }
 
         // Now that the game piece is scored, we do not have a game piece
