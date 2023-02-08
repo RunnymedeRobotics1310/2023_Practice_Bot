@@ -238,8 +238,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
         }
 
         // FIXME:
-        // Rotate to heading 180 to face the grid
-        // Drive over to the grid
+        double returnHeading = 180.0; //change this when we can get a heading
+        addCommands(new DriveOnHeadingCommand(returnHeading, 0.5, 400, 1, driveSubsystem)); // Drive over to the grid
         // VISION? Acquire the nearest vision target
         // Position the arm to the appropriate height
         // Drive towards target
