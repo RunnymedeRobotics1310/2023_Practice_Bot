@@ -107,6 +107,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
         if (currentOrientation == Orientation.FACE_GRID) {
             addCommands(new SetGyroHeadingCommand(180, driveSubsystem));
         }
+        else {
+            addCommands(new SetGyroHeadingCommand(0, driveSubsystem));
+        }
 
         /*
          * Compose the required auto commands for each of the steps in the auto
@@ -208,12 +211,14 @@ public class AutonomousCommand extends SequentialCommandGroup {
          */
 
         // FIXME:
-        // Game piece should be directly in front of robot now but orientation of robot w.r.t. field may not be 0/180
-        // Add new command to tell arm to pick up the piece it sees in front of itself (arm will need to be able to see)
-        //   look for piece
-        //   align arm with piece
-        //   pick up piece
-        //   reposition arm to transport position
+        // Game piece should be directly in front of robot now but orientation of robot w.r.t. field
+        // may not be 0/180
+        // Add new command to tell arm to pick up the piece it sees in front of itself (arm will
+        // need to be able to see)
+        // look for piece
+        // align arm with piece
+        // pick up piece
+        // reposition arm to transport position
     }
 
     /**
@@ -241,9 +246,10 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // FIXME:
         double returnHeading = 180.0; // todo: change this when we can get a heading
         // Drive over to the grid
-        addCommands(new DriveOnHeadingCommand(returnHeading, 0.5, 400, 1, driveSubsystem));
-        // Vision subsystem to acquire the nearest scoring position marker (vision subsystem operation to find scoring position +
-        //   command to switch to "locate AprilTag" or "locate ConePostRetroReflector", etc)
+        addCommands(new DriveOnHeadingCommand(returnHeading, 0.5, 400, 3, driveSubsystem));
+        // Vision subsystem to acquire the nearest scoring position marker (vision subsystem
+        // operation to find scoring position +
+        // command to switch to "locate AprilTag" or "locate ConePostRetroReflector", etc)
         // Position the arm to the appropriate height
         // Drive towards target
         // Drop object
