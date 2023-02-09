@@ -34,12 +34,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
 
     public AutonomousCommand(DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem,
-        SendableChooser<AutoLane> startingLaneChooser,
-        SendableChooser<GamePiece> loadedGamePieceChooser,
-        SendableChooser<Orientation> startingOrientationChooser,
-        SendableChooser<AutoAction> firstGamePieceScoringChooser,
-        SendableChooser<AutoAction> exitZoneActionChooser,
-        SendableChooser<AutoAction> secondGamePieceScoringChooser,
+        SendableChooser<AutoLane> startingLaneChooser, SendableChooser<GamePiece> loadedGamePieceChooser,
+        SendableChooser<Orientation> startingOrientationChooser, SendableChooser<AutoAction> firstGamePieceScoringChooser,
+        SendableChooser<AutoAction> exitZoneActionChooser, SendableChooser<AutoAction> secondGamePieceScoringChooser,
         SendableChooser<AutoAction> balanceChooser) {
 
         this.driveSubsystem  = driveSubsystem;
@@ -76,13 +73,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // If any of these are null, then there was some kind of error.
         // FIXME: Is there anything we can do here?
-        if (startingLane == null
-            || currentOrientation == null
-            || currentGamePiece == null
-            || firstGamePieceScoring == null
-            || exitZoneAction == null
-            || secondGamePieceScoring == null
-            || balanceAction == null) {
+        if (startingLane == null || currentOrientation == null || currentGamePiece == null || firstGamePieceScoring == null
+            || exitZoneAction == null || secondGamePieceScoring == null || balanceAction == null) {
 
             System.out.println("*** ERROR - null found in auto pattern builder ***");
             return;
@@ -115,9 +107,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
          * Compose the required auto commands for each of the steps in the auto
          * based on the selector values
          */
-        addStep1Commands_ScoreFirstGamePiece();
-        addStep2Commands_ExitZone();
-        addStep3Commands_ScoreSecondGamePiece();
+        // addStep1Commands_ScoreFirstGamePiece();
+        // addStep2Commands_ExitZone();
+        // addStep3Commands_ScoreSecondGamePiece();
         addStep4Commands_Balance();
     }
 
@@ -129,8 +121,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // The selector must be set to score low or score mid, otherwise
         // there is nothing to do
 
-        if (!(firstGamePieceScoring == AutoAction.SCORE_BOTTOM
-            || firstGamePieceScoring == AutoAction.SCORE_MIDDLE
+        if (!(firstGamePieceScoring == AutoAction.SCORE_BOTTOM || firstGamePieceScoring == AutoAction.SCORE_MIDDLE
             || firstGamePieceScoring == AutoAction.SCORE_TOP)) {
             return;
         }
@@ -156,8 +147,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
             // When facing the field, only a low delivery is allowed because a piece would be
             // balanced on the bumper
-            if (firstGamePieceScoring == AutoAction.SCORE_MIDDLE
-                || firstGamePieceScoring == AutoAction.SCORE_TOP) {
+            if (firstGamePieceScoring == AutoAction.SCORE_MIDDLE || firstGamePieceScoring == AutoAction.SCORE_TOP) {
                 System.out.println("Cannot score mid unless facing grid, overriding to score low");
             }
 
@@ -182,8 +172,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // An exit zone action must be selected, otherwise do nothing
 
-        if (!(exitZoneAction == AutoAction.EXIT_ZONE
-            || exitZoneAction == AutoAction.PICK_UP_CUBE
+        if (!(exitZoneAction == AutoAction.EXIT_ZONE || exitZoneAction == AutoAction.PICK_UP_CUBE
             || exitZoneAction == AutoAction.PICK_UP_CONE)) {
             return;
         }
@@ -228,16 +217,14 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // If a scoring location is not set, there is nothing to do.
 
-        if (!(secondGamePieceScoring == AutoAction.SCORE_BOTTOM
-            || secondGamePieceScoring == AutoAction.SCORE_MIDDLE
+        if (!(secondGamePieceScoring == AutoAction.SCORE_BOTTOM || secondGamePieceScoring == AutoAction.SCORE_MIDDLE
             || secondGamePieceScoring == AutoAction.SCORE_TOP)) {
             return;
         }
 
         // Check that grabbing a piece was scheduled
 
-        if (!(exitZoneAction == AutoAction.PICK_UP_CONE
-            || exitZoneAction == AutoAction.PICK_UP_CUBE)) {
+        if (!(exitZoneAction == AutoAction.PICK_UP_CONE || exitZoneAction == AutoAction.PICK_UP_CUBE)) {
             System.out.println("*** ERROR *** Cannot deliver a second piece if it was not picked up");
             // Do nothing
             return;
@@ -270,6 +257,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         addCommands(new DriveOnHeadingCommand(180, -.3, 50, 0.25, driveSubsystem));
         addCommands(new DriveOnHeadingCommand(230, -.3, 50, 1, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(180, .3, 50, .5, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(180, -.5, 50, 1, driveSubsystem));
+
 
 
         // FIXME:
