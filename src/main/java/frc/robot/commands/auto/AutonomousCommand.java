@@ -107,6 +107,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
         if (currentOrientation == Orientation.FACE_GRID) {
             addCommands(new SetGyroHeadingCommand(180, driveSubsystem));
         }
+        else {
+            addCommands(new SetGyroHeadingCommand(0, driveSubsystem));
+        }
 
         /*
          * Compose the required auto commands for each of the steps in the auto
@@ -164,7 +167,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
             // reverse and deposit the starting piece
 
-            double speed = -0.5;
+            double speed = -0.3;
             addCommands(new DriveOnHeadingCommand(0, speed, 50, 0.25, driveSubsystem));
         }
 
@@ -195,11 +198,12 @@ public class AutonomousCommand extends SequentialCommandGroup {
         /*
          * If a piece is not required, this portion is complete
          */
-        if ((exitZoneAction == AutoAction.PICK_UP_CONE
-            || exitZoneAction == AutoAction.PICK_UP_CUBE)) {
-
+        if (exitZoneAction == AutoAction.PICK_UP_CUBE) {
+            // FIXME: ensure cube is close enough to the robot that the arm can reach it
             addCommands(new DriveToCubeCommand(0.2, driveSubsystem, visionSubsystem));
-
+        }
+        if (exitZoneAction == AutoAction.PICK_UP_CONE) {
+            // FIXME: add commands to drive right up to the cone
         }
 
         /*
@@ -207,12 +211,14 @@ public class AutonomousCommand extends SequentialCommandGroup {
          */
 
         // FIXME:
-        // Rotate to heading zero
-        // Note: the robot may already be at heading zero if it started facing the field
-        // VISION? Look for a piece
-        // Rotate to the target
-        // Turn on the arm intake (not sure how this works)
-        // Drive forward until object is captured
+        // Game piece should be directly in front of robot now but orientation of robot w.r.t. field
+        // may not be 0/180
+        // Add new command to tell arm to pick up the piece it sees in front of itself (arm will
+        // need to be able to see)
+        // look for piece
+        // align arm with piece
+        // pick up piece
+        // reposition arm to transport position
     }
 
     /**
@@ -228,7 +234,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
             return;
         }
 
-        // Check that that grabbing a piece was scheduled
+        // Check that grabbing a piece was scheduled
 
         if (!(exitZoneAction == AutoAction.PICK_UP_CONE
             || exitZoneAction == AutoAction.PICK_UP_CUBE)) {
@@ -238,13 +244,15 @@ public class AutonomousCommand extends SequentialCommandGroup {
         }
 
         // FIXME:
-        // Rotate to heading 180 to face the grid
+        double returnHeading = 180.0; // todo: change this when we can get a heading
         // Drive over to the grid
-        // VISION? Acquire the nearest vision target
+        addCommands(new DriveOnHeadingCommand(returnHeading, 0.5, 400, 3, driveSubsystem));
+        // Vision subsystem to acquire the nearest scoring position marker (vision subsystem
+        // operation to find scoring position +
+        // command to switch to "locate AprilTag" or "locate ConePostRetroReflector", etc)
         // Position the arm to the appropriate height
         // Drive towards target
         // Drop object
-
         currentOrientation = Orientation.FACE_GRID;
         currentZone        = Zone.COMMUNITY;
     }

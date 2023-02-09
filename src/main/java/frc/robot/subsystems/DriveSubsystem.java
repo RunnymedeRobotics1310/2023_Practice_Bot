@@ -72,7 +72,6 @@ public class DriveSubsystem extends SubsystemBase {
         // Setting both encoders to 0
         resetEncoders();
 
-        navXGyro = new AHRS();
     }
 
     /**

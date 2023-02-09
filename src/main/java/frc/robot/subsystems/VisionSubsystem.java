@@ -226,9 +226,9 @@ public class VisionSubsystem extends SubsystemBase {
             // problem, and if so, code more defensively.
             double[] tgt = getTarget();
             if (tgt[0] < 0)
-                return -10.0;
+                return -3.0;
             if (tgt[0] > 0)
-                return 10.0;
+                return 3.0;
             return 0.0;
         }
         else {
