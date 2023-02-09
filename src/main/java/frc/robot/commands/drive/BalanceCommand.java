@@ -8,6 +8,7 @@ import frc.robot.subsystems.DriveSubsystem;
 public class BalanceCommand extends CommandBase {
 
     private final DriveSubsystem driveSubsystem;
+    long                         startTime = 0;
 
     /**
      * Drive on a specified compass heading (0-360 degrees) for the specified distance in cm.
@@ -26,17 +27,28 @@ public class BalanceCommand extends CommandBase {
     public void initialize() {
 
         System.out.println("BalanceCommand started at " + driveSubsystem.getPitch());
+        startTime = System.currentTimeMillis();
+
+    }
+
+    @Override
+    public void execute() {
 
         // Track the gyro pitch.
-        double pitch = driveSubsystem.getPitch();
-        double speed = 0;
+        double pitch     = driveSubsystem.getPitch();
+        double pitchRate = driveSubsystem.getPitchRate();
+        double speed     = 0;
 
-        if (pitch > 0) {
-            speed = .1;
+        // if (Math.abs(pitchRate) > 1) {
+        // speed = 0;
+        // }
+        if (pitch > 1) {
+            speed = .15;
         }
-        else if (pitch < 0) {
-            speed = -.1;
+        else if (pitch < -1) {
+            speed = -.15;
         }
+
         driveSubsystem.setMotorSpeeds(speed, speed);
 
     }
@@ -44,8 +56,7 @@ public class BalanceCommand extends CommandBase {
     @Override
     public boolean isFinished() {
 
-        double pitch = driveSubsystem.getPitch();
-        if (pitch < 1 && pitch > -1) {
+        if (System.currentTimeMillis() - startTime > 10000) {
             return true;
         }
         return false;
