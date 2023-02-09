@@ -4,84 +4,128 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.VisionSubsystem.VisionTargetType;
 
 public class DriveToTargetCommand extends CommandBase {
 
-    final double                 factor         = 0.01;
+    final double                  factor                 = 0.01;
 
-    private final double         heading, speed, distanceCm, timeoutSeconds;
-    private final DriveSubsystem driveSubsystem;
+    private final double          speed, timeoutSeconds;
 
-    private long                 initializeTime = 0;
+    private final DriveSubsystem  driveSubsystem;
+    private final VisionSubsystem visionSubsystem;
+
+    private long                  initializeTime         = 0;
+
+    private double                targetDelaySec         = 0;
+
+    private boolean               targetFound            = false;
+
+    private double                lastKnownTargetHeading = 0;
 
     /**
-     * Drive on a specified compass heading (0-360 degrees) for the specified distance in inches.
+     * Drive to a cube vision target. If this command does not find a cube vision target,
+     * then the command ends after 1 second.
      * <p>
      * This constructor uses the {@link Constants#DEFAULT_COMMAND_TIMEOUT_SECONDS} for the command
      * timeout
      *
-     * @param heading 0-360 degrees
-     * @param speed in the range 0-1.0 for forward travel, 0 - -1.0 for reverse travel
-     * @param distanceCm for the robot to travel before this command ends.
-     * Use a positive number even if traveling backwards
+     * @param speed in the range 0-1.0
      * @param driveSubsystem
+     * @param visionSubsystem
      */
-    public DriveToTargetCommand(double heading, double speed, double distanceCm, DriveSubsystem driveSubsystem) {
-        this(heading, speed, distanceCm, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem);
+    public DriveToCubeCommand(double speed,
+        DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
+        this(speed, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem, visionSubsystem);
     }
 
     /**
      * Drive on a specified compass heading (0-360 degrees) for the specified distance in cm.
      *
-     * @param heading 0-360 degrees
-     * @param speed in the range 0-1.0 for forward travel, 0 - -1.0 for reverse travel
-     * @param distanceCm for the robot to travel before this command ends.
-     * Use a positive number even if traveling backwards
-     * @param timeoutSeconds to stop this command if the distance has not been reached
+     * @param speed in the range 0-1.0
+     * @param timeoutSeconds to stop this command if the target has not been reached
      * @param driveSubsystem
+     * @param visionSubsystem
      */
-    public DriveToTargetCommand(double heading, double speed, double distanceCm, double timeoutSeconds,
-        DriveSubsystem driveSubsystem) {
+    public DriveToCubeCommand(double speed, double timeoutSeconds,
+        DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
 
-        this.heading        = heading;
-        this.speed          = speed;
-        this.distanceCm     = distanceCm;
-        this.timeoutSeconds = timeoutSeconds;
-        this.driveSubsystem = driveSubsystem;
+        this.speed           = speed;
+        this.timeoutSeconds  = timeoutSeconds;
+        this.driveSubsystem  = driveSubsystem;
+        this.visionSubsystem = visionSubsystem;
 
-        addRequirements(driveSubsystem);
+        addRequirements(driveSubsystem, visionSubsystem);
 
     }
 
     @Override
     public void initialize() {
 
-        System.out.println("DriveOnHeadingCommand started."
-            + " Heading " + heading
-            + ", Speed " + speed
-            + ", distance " + distanceCm
+        System.out.println("DriveToCubeCommand started."
+            + " Speed " + speed
             + ", timeout " + timeoutSeconds);
 
-        // Reset the distance to zero.
-        // Note: this must be done in the initialize instead of in the constructor
-        // because the command could get constructed long before it is run
-        driveSubsystem.resetEncoders();
-
         initializeTime = System.currentTimeMillis();
+
+        if (visionSubsystem.getCurrentVisionTargetType() != VisionTargetType.CUBE) {
+            targetDelaySec = VisionConstants.VISION_SWITCH_TIME_SEC;
+        }
+        else {
+            targetDelaySec = 0;
+        }
+
+        // Start by driving straight towards the target.
+        // Assume the robot is lined up with the target.
+        targetFound = false;
+        driveSubsystem.setMotorSpeeds(speed, speed);
     }
 
     @Override
     public void execute() {
 
-        // Track the gyro heading.
+        double executeTimeSec = (System.currentTimeMillis() - initializeTime) / 1000.0d;
+
+        // If the target was switched, then wait before trying to track a target
+        if (executeTimeSec < targetDelaySec) {
+            return;
+        }
+
+        if (visionSubsystem.isVisionTargetFound()) {
+
+            // FIXME: Is this correct - how do we get the angle to the target?
+            lastKnownTargetHeading  = driveSubsystem.getHeading() + visionSubsystem.getTargetAngleOffset();
+
+            lastKnownTargetHeading %= 360.0d;
+
+            if (lastKnownTargetHeading < 0) {
+                lastKnownTargetHeading += 360;
+            }
+
+            // The first time a target is found, print out the heading
+            if (!targetFound) {
+                System.out.println(this.getClass().getSimpleName()
+                    + ": First cube sighting at heading " + lastKnownTargetHeading);
+                targetFound = true;
+            }
+        }
+
+        // If a target has never been found, then keep driving straight.
+        // Hopefully a target will be found on the next lap
+        if (!targetFound) {
+            driveSubsystem.setMotorSpeeds(speed, speed);
+            return;
+        }
+
+        // Track the last known target heading.
+        // Determine the error between the current heading and the last known target heading
 
         double currentHeading = driveSubsystem.getHeading();
 
-        // Determine the error between the current heading and
-        // the desired heading
-
-        double error          = heading - currentHeading;
+        double error          = lastKnownTargetHeading - currentHeading;
 
         if (error > 180) {
             error -= 360;
@@ -89,6 +133,9 @@ public class DriveToTargetCommand extends CommandBase {
         else if (error < -180) {
             error += 360;
         }
+
+        // FIXME: Should the robot slow down if it knows how far to the target
+        // Note: cubes are not as sensitive as cones which could be tipped over.
 
         double leftSpeed  = speed + error * factor;
         double rightSpeed = speed - error * factor;
@@ -102,17 +149,13 @@ public class DriveToTargetCommand extends CommandBase {
 
         // This command can either reach the distance or time out
 
-        // Check the distance
-        // use the absolute value to account for driving backwards
-        if (Math.abs(driveSubsystem.getEncoderDistanceCm()) > Math.abs(distanceCm)) {
-            return true;
-        }
-
         // Check the timeout
         if ((System.currentTimeMillis() - initializeTime) / 1000d > timeoutSeconds) {
             return true;
         }
 
+        // Stop when the claw detects the cube.
+        // FIXME: The detector should be in the claw subsystem.
         if (driveSubsystem.isTargetDetected()) {
             return true;
         }
@@ -127,14 +170,16 @@ public class DriveToTargetCommand extends CommandBase {
         double runTime = (System.currentTimeMillis() - initializeTime) / 1000d;
 
         if (interrupted) {
-            System.out.print("DriveOnHeadingCommand interrupted");
+            System.out.print(this.getClass().getSimpleName() + " interrupted");
         }
         else {
-            System.out.print("DriveOnHeadingCommand ended");
+            System.out.print(this.getClass().getSimpleName() + " ended");
         }
-        System.out.println(" at distance " + driveSubsystem.getEncoderDistanceCm()
-            + ", on heading " + driveSubsystem.getHeading()
-            + ", in " + runTime + "s");
+
+        System.out.println(": vision target detected " + targetFound
+            + ": target in claw " + driveSubsystem.isTargetDetected()
+            + ": current heading " + driveSubsystem.getHeading()
+            + ": in " + runTime + "s");
 
         // Stop the robot
         driveSubsystem.setMotorSpeeds(0, 0);

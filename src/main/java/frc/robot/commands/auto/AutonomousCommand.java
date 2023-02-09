@@ -12,6 +12,7 @@ import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.GameConstants.Zone;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.commands.drive.DriveToCubeCommand;
+import frc.robot.commands.drive.DriveToTargetCommand;
 import frc.robot.commands.drive.SetGyroHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -250,6 +251,9 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // Vision subsystem to acquire the nearest scoring position marker (vision subsystem
         // operation to find scoring position +
         // command to switch to "locate AprilTag" or "locate ConePostRetroReflector", etc)
+        if (visionSubsystem.isAprilTagAcquired()) {
+            addCommands(new DriveToTargetCommand(returnHeading, 0.5, 50, 3, driveSubsystem));
+        }
         // Position the arm to the appropriate height
         // Drive towards target
         // Drop object
