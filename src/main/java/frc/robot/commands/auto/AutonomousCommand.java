@@ -272,6 +272,10 @@ public class AutonomousCommand extends SequentialCommandGroup {
             return;
         }
 
+        addCommands(new DriveOnHeadingCommand(180, -.3, 50, 0.25, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(230, -.3, 50, 1, driveSubsystem));
+
+
         // FIXME:
 
         // Determine the path to the platform
