@@ -10,6 +10,7 @@ import frc.robot.Constants.AutoConstants.AutoLane;
 import frc.robot.Constants.AutoConstants.Orientation;
 import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.GameConstants.Zone;
+import frc.robot.commands.drive.BalanceCommand;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.commands.drive.DriveToCubeCommand;
 import frc.robot.commands.drive.SetGyroHeadingCommand;
@@ -260,7 +261,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
         addCommands(new DriveOnHeadingCommand(250, -.3, 400, 1.25, driveSubsystem));
         addCommands(new DriveOnHeadingCommand(180, .3, 50, .5, driveSubsystem));
         addCommands(new DriveOnHeadingCommand(180, -.5, 400, 1.25, driveSubsystem));
-
+        addCommands(new BalanceCommand(driveSubsystem));
 
 
         // FIXME:
