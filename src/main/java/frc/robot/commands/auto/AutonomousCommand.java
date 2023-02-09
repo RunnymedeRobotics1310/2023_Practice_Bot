@@ -255,10 +255,11 @@ public class AutonomousCommand extends SequentialCommandGroup {
             return;
         }
 
+        addCommands(new SetGyroHeadingCommand(180, driveSubsystem));
         addCommands(new DriveOnHeadingCommand(180, -.3, 50, 0.25, driveSubsystem));
         addCommands(new DriveOnHeadingCommand(230, -.3, 50, 1, driveSubsystem));
-        addCommands(new DriveOnHeadingCommand(180, .3, 50, .5, driveSubsystem));
-        addCommands(new DriveOnHeadingCommand(180, -.5, 50, 1, driveSubsystem));
+        // addCommands(new DriveOnHeadingCommand(180, .3, 50, .5, driveSubsystem));
+        // addCommands(new DriveOnHeadingCommand(180, -.5, 50, 1, driveSubsystem));
 
 
 
