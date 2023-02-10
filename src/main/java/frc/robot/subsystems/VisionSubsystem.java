@@ -224,18 +224,18 @@ public class VisionSubsystem extends SubsystemBase {
         return true;
     }
 
-    public boolean isAprilTagAcquired() {
+    public boolean isVisionTargetClose() {
         // todo: fixme
         if (PIPELINE_APRIL_TAG_DETECT != pipeline.getInteger(-1)) {
             return false;
         }
+        double pct = getTargetAreaPercent();
+        if (isVisionTargetFound() && pct > 10) {
+            System.out.println("Vision target found and target area is "+pct+" which tells us we are close to the target");
+            return true;
+        }
+        return false;
 
-        double[] tgt = getTarget();
-        if (tgt[0] < 0 || tgt[1] < 0)
-            return false;
-
-        // todo: fixme: more checks
-        return true;
     }
 
     public double getTargetOffset() {

@@ -246,18 +246,16 @@ public class AutonomousCommand extends SequentialCommandGroup {
             return;
         }
 
-        // FIXME:
-        double returnHeading = 180.0; // todo: change this when we can get a heading
-        // Drive over to the grid
-        addCommands(new DriveOnHeadingCommand(returnHeading, 0.5, 400, 3, driveSubsystem));
+        // Turn around and go back to the grid
+        addCommands(new DriveOnHeadingCommand(180.0, 0.5, 400, 3, driveSubsystem));
+
         // Vision subsystem to acquire the nearest scoring position marker (vision subsystem
         // operation to find scoring position +
         // command to switch to "locate AprilTag" or "locate ConePostRetroReflector", etc)
-        if (visionSubsystem.isAprilTagAcquired()) {
-            addCommands(new DriveToTargetCommand(VisionSubsystem.VisionTargetType.TAG, 0.2, driveSubsystem, visionSubsystem));
-        }
-        // Position the arm to the appropriate height
         // Drive towards target
+        // todo: fixme: the bot cannot see the apriltag, so it doesn't know where to stop!
+//        addCommands(new DriveToTargetCommand(VisionSubsystem.VisionTargetType.TAG, 0.5, driveSubsystem, visionSubsystem));
+        // Position the arm to the appropriate height
         // Drop object
         currentOrientation = Orientation.FACE_GRID;
         currentZone        = Zone.COMMUNITY;

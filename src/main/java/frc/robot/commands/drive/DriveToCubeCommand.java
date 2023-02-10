@@ -73,6 +73,7 @@ public class DriveToCubeCommand extends CommandBase {
 
         if (visionSubsystem.getCurrentVisionTargetType() != VisionTargetType.CUBE) {
             targetDelaySec = VisionConstants.VISION_SWITCH_TIME_SEC;
+            visionSubsystem.setVisionTargetType(VisionTargetType.CUBE);
         }
         else {
             targetDelaySec = 0;
@@ -94,7 +95,7 @@ public class DriveToCubeCommand extends CommandBase {
             return;
         }
 
-        if (visionSubsystem.isVisionTargetFound()) {
+        if (visionSubsystem.isCubeTargetAcquired()) {
 
             // FIXME: Is this correct - how do we get the angle to the target?
             lastKnownTargetHeading  = driveSubsystem.getHeading() + visionSubsystem.getTargetAngleOffset();
@@ -183,5 +184,6 @@ public class DriveToCubeCommand extends CommandBase {
 
         // Stop the robot
         driveSubsystem.setMotorSpeeds(0, 0);
+        System.out.println("DriveToCubeCommand end");
     }
 }

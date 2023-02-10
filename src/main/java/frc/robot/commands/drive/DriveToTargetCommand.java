@@ -68,7 +68,8 @@ public class DriveToTargetCommand extends CommandBase {
     @Override
     public void initialize() {
 
-        System.out.println("DriveToCubeCommand started."
+        System.out.println("DriveToTargetCommand started."
+          + " Target " + targetType
           + " Speed " + speed
           + ", timeout " + timeoutSeconds);
 
@@ -76,6 +77,7 @@ public class DriveToTargetCommand extends CommandBase {
 
         if (visionSubsystem.getCurrentVisionTargetType() != targetType) {
             targetDelaySec = VisionConstants.VISION_SWITCH_TIME_SEC;
+            visionSubsystem.setVisionTargetType(targetType);
         }
         else {
             targetDelaySec = 0;
@@ -111,7 +113,7 @@ public class DriveToTargetCommand extends CommandBase {
             // The first time a target is found, print out the heading
             if (!targetFound) {
                 System.out.println(this.getClass().getSimpleName()
-                  + ": First cube sighting at heading " + lastKnownTargetHeading);
+                  + ": First target sighting at heading " + lastKnownTargetHeading);
                 targetFound = true;
             }
         }
@@ -159,7 +161,7 @@ public class DriveToTargetCommand extends CommandBase {
 
         // Stop when the claw detects the cube.
         // FIXME: The detector should be in the claw subsystem.
-        if (driveSubsystem.isTargetDetected()) {
+        if (driveSubsystem.isTargetDetected() || visionSubsystem.isVisionTargetClose()) {
             return true;
         }
 
