@@ -9,43 +9,44 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class VisionSubsystem extends SubsystemBase {
 
     public enum VisionTargetType {
-        CUBE, CONE, NONE
+        CUBE, CONE, TAG, NONE
     };
 
-    private static final long LED_MODE_PIPELINE       = 0;
-    private static final long LED_MODE_OFF            = 1;
-    private static final long LED_MODE_BLINK          = 2;
-    private static final long LED_MODE_ON             = 3;
+    private static final long LED_MODE_PIPELINE         = 0;
+    private static final long LED_MODE_OFF              = 1;
+    private static final long LED_MODE_BLINK            = 2;
+    private static final long LED_MODE_ON               = 3;
 
-    private static final long CAM_MODE_VISION         = 0;
-    private static final long CAM_MODE_DRIVER         = 1;
+    private static final long CAM_MODE_VISION           = 0;
+    private static final long CAM_MODE_DRIVER           = 1;
 
     // configure more pipelines here
-    private static final long PIPELINE_CONE_DETECT    = 0;
-    private static final long PIPELINE_CUBE_DETECT    = 1;
+    private static final long PIPELINE_CONE_DETECT      = 0;
+    private static final long PIPELINE_CUBE_DETECT      = 1;
+    private static final long PIPELINE_APRIL_TAG_DETECT = 3;
 
 
     // calibration data
-    private double[]          topLeft                 = new double[2];
-    private double[]          topRight                = new double[2];
-    private double[]          bottomRight             = new double[2];
-    private double[]          bottomLeft              = new double[2];
+    private double[]          topLeft                   = new double[2];
+    private double[]          topRight                  = new double[2];
+    private double[]          bottomRight               = new double[2];
+    private double[]          bottomLeft                = new double[2];
 
-    NetworkTable              table                   = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable              table                     = NetworkTableInstance.getDefault().getTable("limelight");
 
     // inputs/configs
-    NetworkTableEntry         ledMode                 = table.getEntry("ledMode");
-    NetworkTableEntry         camMode                 = table.getEntry("camMode");
-    NetworkTableEntry         pipeline                = table.getEntry("pipeline");
+    NetworkTableEntry         ledMode                   = table.getEntry("ledMode");
+    NetworkTableEntry         camMode                   = table.getEntry("camMode");
+    NetworkTableEntry         pipeline                  = table.getEntry("pipeline");
 
     // output
-    NetworkTableEntry         tv                      = table.getEntry("tv");
-    NetworkTableEntry         tx                      = table.getEntry("tx");
-    NetworkTableEntry         ty                      = table.getEntry("ty");
-    NetworkTableEntry         ta                      = table.getEntry("ta");
-    NetworkTableEntry         tl                      = table.getEntry("tl");
+    NetworkTableEntry         tv                        = table.getEntry("tv");
+    NetworkTableEntry         tx                        = table.getEntry("tx");
+    NetworkTableEntry         ty                        = table.getEntry("ty");
+    NetworkTableEntry         ta                        = table.getEntry("ta");
+    NetworkTableEntry         tl                        = table.getEntry("tl");
 
-    private VisionTargetType  currentVisionTargetType = VisionTargetType.NONE;
+    private VisionTargetType  currentVisionTargetType   = VisionTargetType.NONE;
 
     /**
      * Tell the vision subsystem the coordinates that it can see (on the floor).
@@ -122,6 +123,10 @@ public class VisionSubsystem extends SubsystemBase {
             setModeCubeAcquisition();
             break;
 
+        case TAG:
+            setModeAprilTags();
+            break;
+
         default:
             System.out.println("Invalid value used for "
                 + "VisionSubsystem.setVisionTargetType("
@@ -155,6 +160,12 @@ public class VisionSubsystem extends SubsystemBase {
 
     public void setModeCubeAcquisition() {
         this.pipeline.setInteger(PIPELINE_CUBE_DETECT);
+        this.camMode.setInteger(CAM_MODE_VISION);
+        this.ledMode.setInteger(LED_MODE_PIPELINE);
+    }
+
+    public void setModeAprilTags() {
+        this.pipeline.setInteger(PIPELINE_APRIL_TAG_DETECT);
         this.camMode.setInteger(CAM_MODE_VISION);
         this.ledMode.setInteger(LED_MODE_PIPELINE);
     }
@@ -202,6 +213,20 @@ public class VisionSubsystem extends SubsystemBase {
         // is the target area larger than minPercentForConeAcquisition of the screen?
         long minPercentForCubeAcquisition = 20;
         if (getTargetAreaPercent() < minPercentForCubeAcquisition) {
+            return false;
+        }
+
+        double[] tgt = getTarget();
+        if (tgt[0] < 0 || tgt[1] < 0)
+            return false;
+
+        // todo: fixme: more checks
+        return true;
+    }
+
+    public boolean isAprilTagAcquired() {
+        // todo: fixme
+        if (PIPELINE_APRIL_TAG_DETECT != pipeline.getInteger(-1)) {
             return false;
         }
 
