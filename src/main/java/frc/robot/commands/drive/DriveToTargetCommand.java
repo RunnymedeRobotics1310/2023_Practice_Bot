@@ -18,6 +18,8 @@ public class DriveToTargetCommand extends CommandBase {
     private final DriveSubsystem  driveSubsystem;
     private final VisionSubsystem visionSubsystem;
 
+    private final VisionTargetType targetType;
+
     private long                  initializeTime         = 0;
 
     private double                targetDelaySec         = 0;
@@ -37,9 +39,9 @@ public class DriveToTargetCommand extends CommandBase {
      * @param driveSubsystem
      * @param visionSubsystem
      */
-    public DriveToCubeCommand(double speed,
-        DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
-        this(speed, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem, visionSubsystem);
+    public DriveToTargetCommand(VisionTargetType targetType, double speed,
+      DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
+        this(targetType, speed, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem, visionSubsystem);
     }
 
     /**
@@ -50,9 +52,10 @@ public class DriveToTargetCommand extends CommandBase {
      * @param driveSubsystem
      * @param visionSubsystem
      */
-    public DriveToCubeCommand(double speed, double timeoutSeconds,
-        DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
+    public DriveToTargetCommand(VisionTargetType targetType, double speed, double timeoutSeconds,
+      DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
 
+        this.targetType      = targetType;
         this.speed           = speed;
         this.timeoutSeconds  = timeoutSeconds;
         this.driveSubsystem  = driveSubsystem;
@@ -66,12 +69,12 @@ public class DriveToTargetCommand extends CommandBase {
     public void initialize() {
 
         System.out.println("DriveToCubeCommand started."
-            + " Speed " + speed
-            + ", timeout " + timeoutSeconds);
+          + " Speed " + speed
+          + ", timeout " + timeoutSeconds);
 
         initializeTime = System.currentTimeMillis();
 
-        if (visionSubsystem.getCurrentVisionTargetType() != VisionTargetType.CUBE) {
+        if (visionSubsystem.getCurrentVisionTargetType() != targetType) {
             targetDelaySec = VisionConstants.VISION_SWITCH_TIME_SEC;
         }
         else {
@@ -108,7 +111,7 @@ public class DriveToTargetCommand extends CommandBase {
             // The first time a target is found, print out the heading
             if (!targetFound) {
                 System.out.println(this.getClass().getSimpleName()
-                    + ": First cube sighting at heading " + lastKnownTargetHeading);
+                  + ": First cube sighting at heading " + lastKnownTargetHeading);
                 targetFound = true;
             }
         }
@@ -177,9 +180,9 @@ public class DriveToTargetCommand extends CommandBase {
         }
 
         System.out.println(": vision target detected " + targetFound
-            + ": target in claw " + driveSubsystem.isTargetDetected()
-            + ": current heading " + driveSubsystem.getHeading()
-            + ": in " + runTime + "s");
+          + ": target in claw " + driveSubsystem.isTargetDetected()
+          + ": current heading " + driveSubsystem.getHeading()
+          + ": in " + runTime + "s");
 
         // Stop the robot
         driveSubsystem.setMotorSpeeds(0, 0);

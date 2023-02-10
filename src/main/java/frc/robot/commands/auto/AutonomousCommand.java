@@ -17,6 +17,8 @@ import frc.robot.commands.drive.SetGyroHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
+import javax.swing.text.html.HTML;
+
 public class AutonomousCommand extends SequentialCommandGroup {
 
     private AutoLane        startingLane           = null;
@@ -252,7 +254,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // operation to find scoring position +
         // command to switch to "locate AprilTag" or "locate ConePostRetroReflector", etc)
         if (visionSubsystem.isAprilTagAcquired()) {
-            addCommands(new DriveToTargetCommand(returnHeading, 0.5, 50, 3, driveSubsystem));
+            addCommands(new DriveToTargetCommand(VisionSubsystem.VisionTargetType.TAG, 0.2, driveSubsystem, visionSubsystem));
         }
         // Position the arm to the appropriate height
         // Drive towards target
