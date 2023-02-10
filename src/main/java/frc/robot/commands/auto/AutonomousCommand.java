@@ -262,14 +262,6 @@ public class AutonomousCommand extends SequentialCommandGroup {
             return;
         }
 
-        addCommands(new SetGyroHeadingCommand(180, driveSubsystem));
-        addCommands(new DriveOnHeadingCommand(180, -.3, 50, 0.25, driveSubsystem));
-        addCommands(new DriveOnHeadingCommand(250, -.3, 400, 1.25, driveSubsystem));
-        addCommands(new DriveOnHeadingCommand(180, .3, 50, .5, driveSubsystem));
-        addCommands(new DriveOnHeadingCommand(180, -.5, 400, 1.25, driveSubsystem));
-        addCommands(new BalanceCommand(driveSubsystem));
-
-
         // FIXME:
 
         // Determine the path to the platform
@@ -294,7 +286,13 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // either toward the field or toward the grid.
 
         // Drive to the platform
+        addCommands(new SetGyroHeadingCommand(180, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(180, -.3, 50, 0.25, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(250, -.3, 400, 1.25, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(180, .3, 50, .5, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(180, -.5, 400, 1.25, driveSubsystem));
 
         // Balance on the platform
+        addCommands(new BalanceCommand(driveSubsystem));
     }
 }
