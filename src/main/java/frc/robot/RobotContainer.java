@@ -20,6 +20,7 @@ import frc.robot.commands.auto.AutonomousCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.DriveModeSelector;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
+import frc.robot.commands.drive.SetGyroHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -149,18 +150,22 @@ public class RobotContainer {
         new Trigger(() -> driverController.getStartButton())
             .onTrue(new CancelCommand(driveSubsystem));
 
+        // Reset the Gyro heading to zero.
+        new Trigger(() -> (driverController.getBackButton()))
+            .onTrue(new SetGyroHeadingCommand(0, driveSubsystem));
+
         // Example using the POV to Drive on Heading at .5 speed for 50cm.
         new Trigger(() -> (driverController.getPOV() == 0))
-            .onTrue(new DriveOnHeadingCommand(0, .5, 400, driveSubsystem));
+            .onTrue(new DriveOnHeadingCommand(0, .2, 200, driveSubsystem));
 
         new Trigger(() -> (driverController.getPOV() == 90))
-            .onTrue(new DriveOnHeadingCommand(90, .5, 400, driveSubsystem));
+            .onTrue(new DriveOnHeadingCommand(0, .4, 200, driveSubsystem));
 
         new Trigger(() -> (driverController.getPOV() == 180))
-            .onTrue(new DriveOnHeadingCommand(0, -.5, 400, driveSubsystem));
+            .onTrue(new DriveOnHeadingCommand(0, .6, 300, driveSubsystem));
 
         new Trigger(() -> (driverController.getPOV() == 270))
-            .onTrue(new DriveOnHeadingCommand(270, .5, 400, driveSubsystem));
+            .onTrue(new DriveOnHeadingCommand(0, .8, 300, driveSubsystem));
 
     }
 

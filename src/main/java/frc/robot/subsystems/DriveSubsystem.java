@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,7 +37,13 @@ public class DriveSubsystem extends SubsystemBase {
     private double             leftSpeed                = 0;
     private double             rightSpeed               = 0;
 
-    private AHRS               navXGyro                 = new AHRS();
+    private AHRS               navXGyro                 = new AHRS() {
+                                                            @Override
+                                                            public void initSendable(SendableBuilder builder) {
+                                                                builder.setSmartDashboardType("Gyro");
+                                                                builder.addDoubleProperty("Value", this::getAngle, null);
+                                                            }
+                                                        };
     private double             zeroX                    = 0;
     private double             zeroY                    = 0;
 
@@ -95,6 +102,7 @@ public class DriveSubsystem extends SubsystemBase {
      * NOTE: This is not the same as calibrating the gyro.
      */
     public void resetGyroHeading() {
+
         setGyroHeading(0);
     }
 
@@ -109,7 +117,9 @@ public class DriveSubsystem extends SubsystemBase {
         gyroHeadingOffset = 0;
 
         // Adjust the offset so that the heading is now the current heading.
-        gyroHeadingOffset = getHeading() - heading;
+        gyroHeadingOffset = heading - getHeading();
+
+        navXGyro.setAngleAdjustment(gyroHeadingOffset);
     }
 
     /**
@@ -123,7 +133,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         // subtract the offset angle that was saved when the gyro
         // was last rest.
-        gyroAngle -= gyroHeadingOffset;
+        gyroAngle += gyroHeadingOffset;
 
         // The angle can be positive or negative and extends beyond 360 degrees.
         double heading = gyroAngle % 360.0;
@@ -139,7 +149,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         switch (gyroAxis) {
         case YAW:
-            return navXGyro.getAngle();
+            return navXGyro.getYaw();
         case PITCH:
             return navXGyro.getPitch();
         case ROLL:
@@ -260,9 +270,9 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putData("Gyro", navXGyro);
 
         // Put the displacements on the smartDashboard for testing (round to nearest cm)
-        SmartDashboard.putNumber("NavX: X (m)", Math.round(navXGyro.getDisplacementX() * 100));
-        SmartDashboard.putNumber("NavX: Y (m)", Math.round(navXGyro.getDisplacementY() * 100));
-        SmartDashboard.putNumber("NavX: Z (m)", Math.round(navXGyro.getDisplacementZ() * 100));
+        SmartDashboard.putNumber("NavX: X (cm)", Math.round(navXGyro.getDisplacementX() * 100));
+        SmartDashboard.putNumber("NavX: Y (cm)", Math.round(navXGyro.getDisplacementY() * 100));
+        SmartDashboard.putNumber("NavX: Z (cm)", Math.round(navXGyro.getDisplacementZ() * 100));
 
         SmartDashboard.putNumber("Gyro Heading", getHeading());
         SmartDashboard.putNumber("Gyro Pitch", getPitch());

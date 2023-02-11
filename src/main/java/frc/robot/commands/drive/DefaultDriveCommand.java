@@ -139,7 +139,7 @@ public class DefaultDriveCommand extends CommandBase {
             driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
         }
         else {
-            driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
+            driveSubsystem.setMotorSpeeds(leftSpeed / 5, rightSpeed / 2);
         }
     }
 
