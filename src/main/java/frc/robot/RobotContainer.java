@@ -20,6 +20,8 @@ import frc.robot.commands.auto.AutonomousCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.DriveModeSelector;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
+import frc.robot.commands.drive.ResetGyroPitchCommand;
+import frc.robot.commands.drive.SetGyroHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -148,6 +150,11 @@ public class RobotContainer {
         // Cancel all commands on the XBox controller three lines (aka. start) button
         new Trigger(() -> driverController.getStartButton())
             .onTrue(new CancelCommand(driveSubsystem));
+
+        // Reset the Gyro heading to zero.
+        new Trigger(() -> driverController.getStartButton())
+            .onTrue(new SetGyroHeadingCommand(0, driveSubsystem)
+                .andThen(new ResetGyroPitchCommand(driveSubsystem)));
 
         // Example using the POV to Drive on Heading at .5 speed for 50cm.
         new Trigger(() -> (driverController.getPOV() == 0))
