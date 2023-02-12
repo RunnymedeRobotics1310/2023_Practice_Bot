@@ -11,13 +11,11 @@ import frc.robot.Constants.AutoConstants.Orientation;
 import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.GameConstants.Zone;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
-import frc.robot.commands.drive.DriveToCubeCommand;
 import frc.robot.commands.drive.DriveToTargetCommand;
 import frc.robot.commands.drive.SetGyroHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-
-import javax.swing.text.html.HTML;
+import frc.robot.subsystems.VisionSubsystem.VisionTargetType;
 
 public class AutonomousCommand extends SequentialCommandGroup {
 
@@ -203,7 +201,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
          */
         if (exitZoneAction == AutoAction.PICK_UP_CUBE) {
             // FIXME: ensure cube is close enough to the robot that the arm can reach it
-            addCommands(new DriveToCubeCommand(0.2, driveSubsystem, visionSubsystem));
+            addCommands(new DriveToTargetCommand(VisionTargetType.CUBE, .2, driveSubsystem, visionSubsystem));
         }
         if (exitZoneAction == AutoAction.PICK_UP_CONE) {
             // FIXME: add commands to drive right up to the cone
@@ -254,9 +252,11 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // command to switch to "locate AprilTag" or "locate ConePostRetroReflector", etc)
         // Drive towards target
         // todo: fixme: the bot cannot see the apriltag, so it doesn't know where to stop!
-//        addCommands(new DriveToTargetCommand(VisionSubsystem.VisionTargetType.TAG, 0.5, driveSubsystem, visionSubsystem));
+        // addCommands(new DriveToTargetCommand(VisionSubsystem.VisionTargetType.TAG, 0.5,
+        // driveSubsystem, visionSubsystem));
         // Position the arm to the appropriate height
         // Drop object
+
         currentOrientation = Orientation.FACE_GRID;
         currentZone        = Zone.COMMUNITY;
     }
@@ -271,10 +271,6 @@ public class AutonomousCommand extends SequentialCommandGroup {
         if (balanceAction != AutoAction.BALANCE) {
             return;
         }
-
-        addCommands(new DriveOnHeadingCommand(180, -.3, 50, 0.25, driveSubsystem));
-        addCommands(new DriveOnHeadingCommand(230, -.3, 50, 1, driveSubsystem));
-
 
         // FIXME:
 
@@ -302,5 +298,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // Drive to the platform
 
         // Balance on the platform
+
+        // TODO: Integrate the code from the auto-balance branch.
     }
 }

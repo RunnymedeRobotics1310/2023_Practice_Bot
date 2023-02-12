@@ -11,22 +11,22 @@ import frc.robot.subsystems.VisionSubsystem.VisionTargetType;
 
 public class DriveToTargetCommand extends CommandBase {
 
-    final double                  factor                 = 0.01;
+    final double                   factor                 = 0.01;
 
-    private final double          speed, timeoutSeconds;
+    private final double           speed, timeoutSeconds;
 
-    private final DriveSubsystem  driveSubsystem;
-    private final VisionSubsystem visionSubsystem;
+    private final DriveSubsystem   driveSubsystem;
+    private final VisionSubsystem  visionSubsystem;
 
     private final VisionTargetType targetType;
 
-    private long                  initializeTime         = 0;
+    private long                   initializeTime         = 0;
 
-    private double                targetDelaySec         = 0;
+    private double                 targetDelaySec         = 0;
 
-    private boolean               targetFound            = false;
+    private boolean                targetFound            = false;
 
-    private double                lastKnownTargetHeading = 0;
+    private double                 lastKnownTargetHeading = 0;
 
     /**
      * Drive to a cube vision target. If this command does not find a cube vision target,
@@ -40,7 +40,7 @@ public class DriveToTargetCommand extends CommandBase {
      * @param visionSubsystem
      */
     public DriveToTargetCommand(VisionTargetType targetType, double speed,
-      DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
+        DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
         this(targetType, speed, Constants.DEFAULT_COMMAND_TIMEOUT_SECONDS, driveSubsystem, visionSubsystem);
     }
 
@@ -53,7 +53,7 @@ public class DriveToTargetCommand extends CommandBase {
      * @param visionSubsystem
      */
     public DriveToTargetCommand(VisionTargetType targetType, double speed, double timeoutSeconds,
-      DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
+        DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
 
         this.targetType      = targetType;
         this.speed           = speed;
@@ -69,9 +69,9 @@ public class DriveToTargetCommand extends CommandBase {
     public void initialize() {
 
         System.out.println("DriveToTargetCommand started."
-          + " Target " + targetType
-          + " Speed " + speed
-          + ", timeout " + timeoutSeconds);
+            + " Target " + targetType
+            + " Speed " + speed
+            + ", timeout " + timeoutSeconds);
 
         initializeTime = System.currentTimeMillis();
 
@@ -113,7 +113,7 @@ public class DriveToTargetCommand extends CommandBase {
             // The first time a target is found, print out the heading
             if (!targetFound) {
                 System.out.println(this.getClass().getSimpleName()
-                  + ": First target sighting at heading " + lastKnownTargetHeading);
+                    + ": First target sighting at heading " + lastKnownTargetHeading);
                 targetFound = true;
             }
         }
@@ -182,9 +182,9 @@ public class DriveToTargetCommand extends CommandBase {
         }
 
         System.out.println(": vision target detected " + targetFound
-          + ": target in claw " + driveSubsystem.isTargetDetected()
-          + ": current heading " + driveSubsystem.getHeading()
-          + ": in " + runTime + "s");
+            + ": target in claw " + driveSubsystem.isTargetDetected()
+            + ": current heading " + driveSubsystem.getHeading()
+            + ": in " + runTime + "s");
 
         // Stop the robot
         driveSubsystem.setMotorSpeeds(0, 0);

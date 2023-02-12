@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class VisionSubsystem extends SubsystemBase {
 
     public enum VisionTargetType {
-        CUBE, CONE, TAG, NONE
+        CUBE, CONE, TAG, CONE_POST, NONE
     };
 
     private static final long LED_MODE_PIPELINE         = 0;
@@ -77,11 +77,15 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
 
         // read values periodically and post to smart dashboard periodically
-        SmartDashboard.putBoolean("Limelight Target Found", tv.getDouble(-1.0) == 1);
-        SmartDashboard.putNumber("Limelight Target X Coordinate", tx.getDouble(-1.0));
-        SmartDashboard.putNumber("Limelight Target Y Coordinate", ty.getDouble(-1.0));
-        SmartDashboard.putNumber("Limelight Target Area Percentage", ta.getDouble(-1.0));
-        SmartDashboard.putNumber("Limelight Target L value (whatever that is)", ta.getDouble(-1.0));
+        SmartDashboard.putBoolean("Limelight Target Found", isVisionTargetFound());
+        SmartDashboard.putBoolean("Cube", currentVisionTargetType == VisionTargetType.CUBE && isVisionTargetFound());
+        SmartDashboard.putBoolean("Cone", currentVisionTargetType == VisionTargetType.CONE && isVisionTargetFound());
+        SmartDashboard.putBoolean("Post", currentVisionTargetType == VisionTargetType.CONE_POST && isVisionTargetFound());
+        SmartDashboard.putBoolean("Tag", currentVisionTargetType == VisionTargetType.TAG && isVisionTargetFound());
+        SmartDashboard.putNumber("Limelight tx-value", tx.getDouble(-1.0));
+        SmartDashboard.putNumber("Limelight ty-value", ty.getDouble(-1.0));
+        SmartDashboard.putNumber("Limelight ta-value", ta.getDouble(-1.0));
+        SmartDashboard.putNumber("Limelight l-value", tl.getDouble(-1.0));
         SmartDashboard.putNumber("Limelight Cam Mode", camMode.getInteger(-1L));
         SmartDashboard.putNumber("Limelight LED mode", ledMode.getInteger(-1L));
         SmartDashboard.putNumber("Limelight Pipeline", pipeline.getInteger(-1L));
@@ -110,6 +114,11 @@ public class VisionSubsystem extends SubsystemBase {
         return currentVisionTargetType;
     }
 
+    /**
+     * Set the current vision target type
+     *
+     * @param visionTargetType
+     */
     public void setVisionTargetType(VisionTargetType visionTargetType) {
 
         currentVisionTargetType = visionTargetType;
@@ -125,6 +134,10 @@ public class VisionSubsystem extends SubsystemBase {
 
         case TAG:
             setModeAprilTags();
+            break;
+
+        case CONE_POST:
+            // FIXME: Implement a post detection pipe
             break;
 
         default:
@@ -195,6 +208,11 @@ public class VisionSubsystem extends SubsystemBase {
         return true;
     }
 
+    /**
+     * Determine if a vision target of the current type is found.
+     * <p>
+     * Use {@link #setVisionTargetType(VisionTargetType)} to set the vision target type
+     */
     public boolean isVisionTargetFound() {
         return tv.getDouble(-1) == 1;
     }
@@ -231,7 +249,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
         double pct = getTargetAreaPercent();
         if (isVisionTargetFound() && pct > 10) {
-            System.out.println("Vision target found and target area is "+pct+" which tells us we are close to the target");
+            System.out.println("Vision target found and target area is " + pct + " which tells us we are close to the target");
             return true;
         }
         return false;
