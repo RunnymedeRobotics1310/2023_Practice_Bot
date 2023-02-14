@@ -32,19 +32,20 @@ public class VisionSubsystem extends SubsystemBase {
     private double[]          bottomRight               = new double[2];
     private double[]          bottomLeft                = new double[2];
 
-    NetworkTable              table                     = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable botposeTable = NetworkTableInstance.getDefault().getTable("botpose");
 
     // inputs/configs
-    NetworkTableEntry         ledMode                   = table.getEntry("ledMode");
-    NetworkTableEntry         camMode                   = table.getEntry("camMode");
-    NetworkTableEntry         pipeline                  = table.getEntry("pipeline");
+    NetworkTableEntry         ledMode                   = limelightTable.getEntry("ledMode");
+    NetworkTableEntry         camMode                   = limelightTable.getEntry("camMode");
+    NetworkTableEntry         pipeline                  = limelightTable.getEntry("pipeline");
 
     // output
-    NetworkTableEntry         tv                        = table.getEntry("tv");
-    NetworkTableEntry         tx                        = table.getEntry("tx");
-    NetworkTableEntry         ty                        = table.getEntry("ty");
-    NetworkTableEntry         ta                        = table.getEntry("ta");
-    NetworkTableEntry         tl                        = table.getEntry("tl");
+    NetworkTableEntry         tv                        = limelightTable.getEntry("tv");
+    NetworkTableEntry         tx                        = limelightTable.getEntry("tx");
+    NetworkTableEntry         ty                        = limelightTable.getEntry("ty");
+    NetworkTableEntry         ta                        = limelightTable.getEntry("ta");
+    NetworkTableEntry         tl                        = limelightTable.getEntry("tl");
 
     private VisionTargetType  currentVisionTargetType   = VisionTargetType.NONE;
 
@@ -91,6 +92,14 @@ public class VisionSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Limelight Pipeline", pipeline.getInteger(-1L));
         SmartDashboard.putBoolean("Cone Targed Acquired", isConeTargetAcquired());
         SmartDashboard.putBoolean("Cube Targed Acquired", isCubeTargetAcquired());
+
+        /*
+        If your Limelight’s robot-space pose has been configured in the web ui, and a field map has been uploaded via the web ui, then the robot’s location in field space will be available via the “botpose” networktables array (x,y,z in meters, roll, pitch, yaw in degrees).
+         */
+        for (String s : botposeTable.getKeys()) {
+            NetworkTableEntry entry = botposeTable.getEntry(s);
+            SmartDashboard.putString("botpose: "+s, String.valueOf(entry.getValue().getValue()));
+        }
     }
 
     /**
