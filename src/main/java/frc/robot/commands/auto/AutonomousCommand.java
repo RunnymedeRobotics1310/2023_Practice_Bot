@@ -18,8 +18,6 @@ import frc.robot.commands.drive.SetGyroHeadingCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
-import javax.swing.text.html.HTML;
-
 public class AutonomousCommand extends SequentialCommandGroup {
 
     private AutoLane        startingLane           = null;
