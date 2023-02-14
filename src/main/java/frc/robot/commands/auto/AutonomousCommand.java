@@ -246,7 +246,8 @@ public class AutonomousCommand extends SequentialCommandGroup {
         }
 
         // Turn around and go back to the grid
-        addCommands(new DriveOnHeadingCommand(180.0, 0.5, 400, 3, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(180.0, 0.5, 450, 3, driveSubsystem));
+        addCommands(new DriveToTargetCommand(VisionTargetType.TAG, 0.3, driveSubsystem, visionSubsystem));
 
         // Vision subsystem to acquire the nearest scoring position marker (vision subsystem
         // operation to find scoring position +
@@ -299,7 +300,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
         // Drive to the platform
         addCommands(new SetGyroHeadingCommand(180, driveSubsystem));
         addCommands(new DriveOnHeadingCommand(180, -.3, 50, 0.25, driveSubsystem));
-        addCommands(new DriveOnHeadingCommand(250, -.3, 400, 1.25, driveSubsystem));
+        addCommands(new DriveOnHeadingCommand(250, -.3, 300, 1.25, driveSubsystem));
         addCommands(new DriveOnHeadingCommand(180, .3, 50, .5, driveSubsystem));
         addCommands(new DriveOnHeadingCommand(180, -.5, 400, 1.25, driveSubsystem));
 
