@@ -59,6 +59,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     private double             gyroHeadingOffset        = 0;
     private double             gyroPitchOffset          = 0;
+    private double             lastPitch                = 0;
+    private double             pitchRate                = 0;
 
     private enum GyroAxis {
         YAW, PITCH, ROLL
@@ -197,6 +199,10 @@ public class DriveSubsystem extends SubsystemBase {
         return gyroPitch;
     }
 
+    public double getPitchRate() {
+        return pitchRate;
+    }
+
     /**
      * Gets the average distance of the two encoders.
      *
@@ -289,6 +295,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        pitchRate = (getPitch() - lastPitch) * 50; // 50Hz
+        lastPitch = getPitch();
 
         SmartDashboard.putNumber("Right Motor", rightSpeed);
         SmartDashboard.putNumber("Left  Motor", leftSpeed);
