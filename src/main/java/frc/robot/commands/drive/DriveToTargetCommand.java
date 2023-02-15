@@ -161,8 +161,30 @@ public class DriveToTargetCommand extends CommandBase {
 
         // Stop when the claw detects the cube.
         // FIXME: The detector should be in the claw subsystem.
-        if (driveSubsystem.isTargetDetected() || visionSubsystem.isVisionTargetClose()) {
-            return true;
+        // if (driveSubsystem.isTargetDetected() || visionSubsystem.isVisionTargetClose()) {
+        // return true;
+        // }
+
+        double targetArea = visionSubsystem.getTargetAreaPercent();
+        switch (targetType) {
+        case CONE:
+            if (targetArea >= 20) {
+                return true;
+            }
+            break;
+        case CUBE:
+            if (targetArea >= 60) {
+                return true;
+            }
+            break;
+        case TAG:
+            if (targetArea >= 5) {
+                return true;
+            }
+            break;
+        default:
+            // ???
+            break;
         }
 
         return false;
@@ -182,9 +204,9 @@ public class DriveToTargetCommand extends CommandBase {
         }
 
         System.out.println(": vision target detected " + targetFound
-            + ": target in claw " + driveSubsystem.isTargetDetected()
             + ": current heading " + driveSubsystem.getHeading()
-            + ": in " + runTime + "s");
+            + ": in " + runTime + "s"
+            + ": area " + visionSubsystem.getTargetAreaPercent());
 
         // Stop the robot
         driveSubsystem.setMotorSpeeds(0, 0);

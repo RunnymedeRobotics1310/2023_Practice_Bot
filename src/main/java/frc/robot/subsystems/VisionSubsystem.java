@@ -106,7 +106,7 @@ public class VisionSubsystem extends SubsystemBase {
         return d;
     }
 
-    private double getTargetAreaPercent() {
+    public double getTargetAreaPercent() {
         return ta.getDouble(-1.0);
     }
 
