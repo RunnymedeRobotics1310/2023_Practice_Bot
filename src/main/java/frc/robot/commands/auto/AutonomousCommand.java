@@ -143,8 +143,29 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
             switch (currentGamePiece) {
             case CUBE:
+                switch (firstGamePieceScoring) {
+                case SCORE_BOTTOM:
+                    break;
+                case SCORE_MIDDLE:
+                    break;
+                case SCORE_TOP:
+                    break;
+                default:
+                    break;
+                }
+
                 break;
             case CONE:
+                switch (firstGamePieceScoring) {
+                case SCORE_BOTTOM:
+                    break;
+                case SCORE_MIDDLE:
+                    break;
+                case SCORE_TOP:
+                    break;
+                default:
+                    break;
+                }
                 break;
             }
             // FIXME:
@@ -160,7 +181,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
             // balanced on the bumper
             if (firstGamePieceScoring == AutoAction.SCORE_MIDDLE
                 || firstGamePieceScoring == AutoAction.SCORE_TOP) {
-                System.out.println("Cannot score mid unless facing grid, overriding to score low");
+                System.out.println("Cannot score mid or top unless facing grid, overriding to score low");
             }
 
             // Drive Backward

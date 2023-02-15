@@ -90,4 +90,24 @@ public final class Constants {
         /** Time to switch pipelines and acquire a new vision target */
         public static final double VISION_SWITCH_TIME_SEC = .25;
     }
+
+    public static final class ArmConstants {
+
+        public static final int TOP_CUBE_HEIGHT    = 30;
+        public static final int MIDDLE_CUBE_HEIGHT = 20;
+        public static final int BOTTOM_CUBE_HEIGHT = 10;
+
+        public static final int TOP_CONE_HEIGHT    = 30;
+        public static final int MIDDLE_CONE_HEIGHT = 20;
+        public static final int BOTTOM_CONE_HEIGHT = 10;
+
+        public static final int TOP_CUBE_EXTEND    = 30;
+        public static final int MIDDLE_CUBE_EXTEND = 20;
+        public static final int BOTTOM_CUBE_EXTEND = 10;
+
+        public static final int TOP_CONE_EXTEND    = 30;
+        public static final int MIDDLE_CONE_EXTEND = 20;
+        public static final int BOTTOM_CONE_EXTEND = 10;
+    }
 }
+
