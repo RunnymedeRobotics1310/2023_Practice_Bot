@@ -78,14 +78,6 @@ public class VisionSubsystem extends SubsystemBase {
     this.bottomLeft = bottomLeft;
   }
 
-  private String fmt(double d, int chars) {
-    String s = String.valueOf(d);
-    if (s.length() > chars)
-      return s.substring(0, chars);
-    else
-      return s;
-  }
-
   @Override
   public void periodic() {
 
@@ -101,42 +93,30 @@ public class VisionSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Limelight l-value", tl.getDouble(-1.0));
     SmartDashboard.putNumber("Limelight Cam Mode", camMode.getInteger(-1L));
     SmartDashboard.putNumber("Limelight LED mode", ledMode.getInteger(-1L));
-    SmartDashboard.putNumber("Limelight Pipeline!", pipeline.getInteger(-1L));
-    SmartDashboard.putBoolean("Cone Targed Acquired", isConeTargetAcquired());
-    SmartDashboard.putBoolean("Cube Targed Acquired", isCubeTargetAcquired());
+    SmartDashboard.putNumber("Limelight Pipeline", pipeline.getInteger(-1L));
+    SmartDashboard.putBoolean("Cone Target Acquired", isConeTargetAcquired());
+    SmartDashboard.putBoolean("Cube Target Acquired", isCubeTargetAcquired());
 
-        /*
-        If your Limelight’s robot-space pose has been configured in the web ui, and a field map has been uploaded via the web ui, then the robot’s location in field space will be available via the “botpose” networktables array (x,y,z in meters, roll, pitch, yaw in degrees).
-         */
-    {
+    /*
+       If your Limelight’s robot-space pose has been configured in the web ui, and a field map has
+       been uploaded via the web ui, then the robot’s location in field space will be available
+       via the “botpose” networktables array (x,y,z in meters, roll, pitch, yaw in degrees).
+     */
+    double[] bp = botpose.getDoubleArray(new double[6]);
+    SmartDashboard.putString("botpose (x,y,z)", String.format("(%.1f, %.1f, %.1f) m", bp[0], bp[1], bp[2]));
+    SmartDashboard.putString("botpose (r,p,y)", String.format("(%.1f, %.1f, %.1f) deg", bp[3], bp[4], bp[5]));
 
-      double[] bp = botpose.getDoubleArray(new double[6]);
-      SmartDashboard.putString("botpose (x,y,z)",
-        "(" + fmt(bp[0], 4) + "," + fmt(bp[1], 4) + "," + fmt(bp[2], 4) + ") metres");
-      SmartDashboard.putString("botpose (roll, pitch, yaw)",
-        "(" + fmt(bp[3], 4) + "," + fmt(bp[4], 4) + "," + fmt(bp[5], 4) + ") degrees");
-    }
-    {
-      double[] bp = botposeRed.getDoubleArray(new double[6]);
-      SmartDashboard.putString("botpose Red (x,y,z)",
-        "(" + fmt(bp[0], 4) + "," + fmt(bp[1], 4) + "," + fmt(bp[2], 4) + ") metres");
-      SmartDashboard.putString("botpose Red (roll, pitch, yaw)",
-        "(" + fmt(bp[3], 4) + "," + fmt(bp[4], 4) + "," + fmt(bp[5], 4) + ") degrees");
-    }
-    {
-      double[] bp = botposeBlue.getDoubleArray(new double[6]);
-      SmartDashboard.putString("botpose Blue (x,y,z)",
-        "(" + fmt(bp[0], 4) + "," + fmt(bp[1], 4) + "," + fmt(bp[2], 4) + ") metres");
-      SmartDashboard.putString("botpose Blue (roll, pitch, yaw)",
-        "(" + fmt(bp[3], 4) + "," + fmt(bp[4], 4) + "," + fmt(bp[5], 4) + ") degrees");
-    }
-    {
-      double[] bp = botposeTarget.getDoubleArray(new double[6]);
-      SmartDashboard.putString("botpose Target (x,y,z)",
-        "(" + fmt(bp[0], 4) + "," + fmt(bp[1], 4) + "," + fmt(bp[2], 4) + ") metres");
-      SmartDashboard.putString("botpose Target (roll, pitch, yaw)",
-        "(" + fmt(bp[3], 4) + "," + fmt(bp[4], 4) + "," + fmt(bp[5], 4) + ") degrees");
-    }
+    double[] br = botposeRed.getDoubleArray(new double[6]);
+    SmartDashboard.putString("botpose Red (x,y,z)", String.format("(%.1f, %.1f, %.1f) m", br[0], br[1], br[2]));
+    SmartDashboard.putString("botpose Red (r,p,y)", String.format("(%.1f, %.1f, %.1f) deg", br[3], br[4], br[5]));
+
+    double[] bb = botposeBlue.getDoubleArray(new double[6]);
+    SmartDashboard.putString("botpose Blue (x,y,z)", String.format("(%.1f, %.1f, %.1f) m", bb[0], bb[1], bb[2]));
+    SmartDashboard.putString("botpose Blue (r,p,y)", String.format("(%.1f, %.1f, %.1f) deg", bb[3], bb[4], bb[5]));
+
+    double[] bt = botposeTarget.getDoubleArray(new double[6]);
+    SmartDashboard.putString("botpose Target (x,y,z)", String.format("(%.1f, %.1f, %.1f) m", bt[0], bt[1], bt[2]));
+    SmartDashboard.putString("botpose Target (r,p,y)", String.format("(%.1f, %.1f, %.1f) deg", bt[3], bt[4], bt[5]));
   }
 
   /**
