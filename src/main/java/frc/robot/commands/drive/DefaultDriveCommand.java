@@ -145,20 +145,37 @@ public class DefaultDriveCommand extends CommandBase {
 
     private void setMotorSpeedsQuentin() {
 
-        double speed = getScaledValue(-driverController.getLeftY());
-        double turn  = getScaledValue(driverController.getRightX());
+        double  speed = getScaledValue(-driverController.getLeftY());
+        double  turn  = getScaledValue(driverController.getRightX()) / 2;
+        double  turn2 = turn;
+        boolean boost = driverController.getRightBumper();
 
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumber("Turn", turn);
 
         double leftSpeed = 0, rightSpeed = 0;
 
-        if (speed > 0) {
-            if (turn > 0) {
+        if (!boost) {
+            speed = speed / 2;
+        }
+        else {
+            speed = Math.signum(speed);
+        }
+
+        if (speed < 0) {
+            turn = -turn;
+        }
+
+        if (speed == 0) {
+            leftSpeed  = turn;
+            rightSpeed = -turn;
+        }
+        else if (boost) {
+            if (turn2 < 0) {
                 leftSpeed  = speed + turn;
                 rightSpeed = speed;
             }
-            else if (turn < 0) {
+            else if (turn2 > 0) {
                 leftSpeed  = speed;
                 rightSpeed = speed - turn;
             }
@@ -167,33 +184,21 @@ public class DefaultDriveCommand extends CommandBase {
                 rightSpeed = speed;
             }
         }
-
-        else if (speed < 0) {
-            if (turn < 0) {
+        else {
+            if (turn2 < 0) {
                 leftSpeed  = speed;
-                rightSpeed = speed + turn;
+                rightSpeed = speed - turn;
             }
-            else if (turn > 0) {
-                leftSpeed  = speed - turn;
+            else if (turn2 > 0) {
+                leftSpeed  = speed + turn;
                 rightSpeed = speed;
             }
             else {
-                leftSpeed  = speed;
                 rightSpeed = speed;
+                leftSpeed  = speed;
             }
         }
-        else {
-            leftSpeed  = speed + turn;
-            rightSpeed = speed - turn;
-        }
-
-        // Boost
-        if (driverController.getRightBumper()) {
-            driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
-        }
-        else {
-            driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
-        }
+        driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
     }
 
     private static double getScaledValue(double value) {
