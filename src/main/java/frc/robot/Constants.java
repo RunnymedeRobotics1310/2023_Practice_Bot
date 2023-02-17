@@ -58,7 +58,7 @@ public final class Constants {
     public static final class DriveConstants {
 
         public static enum DriveMode {
-            TANK, ARCADE, QUENTIN;
+            TANK, ARCADE, QUENTIN, DUAL_STICK_ARCADE;
         }
 
         public static final int     LEFT_MOTOR_PORT               = 10;

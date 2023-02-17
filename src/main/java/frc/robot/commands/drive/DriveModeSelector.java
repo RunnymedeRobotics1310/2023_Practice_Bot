@@ -16,6 +16,7 @@ public class DriveModeSelector {
         driveModeChooser.addOption("Arcade", DriveMode.ARCADE);
         driveModeChooser.addOption("Tank", DriveMode.TANK);
         driveModeChooser.setDefaultOption("Quentin", DriveMode.QUENTIN);
+        driveModeChooser.addOption("2 Stick Arcade", DriveMode.DUAL_STICK_ARCADE);
 
         SmartDashboard.putData("Drive Mode", driveModeChooser);
     }
