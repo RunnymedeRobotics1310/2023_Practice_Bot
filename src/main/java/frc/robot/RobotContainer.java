@@ -153,8 +153,8 @@ public class RobotContainer {
         new Trigger(() -> driverController.getStartButton())
             .onTrue(new CancelCommand(driveSubsystem));
 
-        // Reset the Gyro heading to zero.
-        new Trigger(() -> driverController.getStartButton())
+        // Reset the Gyro heading to zero on the menu (aka. back) button
+        new Trigger(() -> driverController.getBackButton())
             .onTrue(new SetGyroHeadingCommand(0, driveSubsystem)
                 .andThen(new ResetGyroPitchCommand(driveSubsystem)));
 
