@@ -9,12 +9,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants.AutoAction;
 import frc.robot.Constants.AutoConstants.AutoLane;
 import frc.robot.Constants.AutoConstants.Orientation;
 import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.OiConstants;
+import frc.robot.Constants.VisionConstants.CameraView;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.AutonomousCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
@@ -152,7 +154,7 @@ public class RobotContainer {
             .onTrue(new CancelCommand(driveSubsystem));
 
         // Reset the Gyro heading to zero.
-        new Trigger(() -> driverController.getStartButton())
+        new Trigger(() -> driverController.getBackButton())
             .onTrue(new SetGyroHeadingCommand(0, driveSubsystem)
                 .andThen(new ResetGyroPitchCommand(driveSubsystem)));
 
@@ -169,6 +171,17 @@ public class RobotContainer {
         new Trigger(() -> (driverController.getPOV() == 270))
             .onTrue(new DriveOnHeadingCommand(270, .5, 400, driveSubsystem));
 
+        // Cancel all commands on the XBox controller three lines (aka. start) button
+        new Trigger(() -> driverController.getLeftBumper())
+            .onTrue(new InstantCommand(() -> {
+                CameraView cameraView = visionSubsystem.getCameraView();
+                int    ordinal    = cameraView.ordinal();
+                ordinal++;
+                if (ordinal >= CameraView.values().length) {
+                    ordinal = 0;
+                }
+                visionSubsystem.setCameraView(CameraView.values()[ordinal]);
+            }));
     }
 
     /**

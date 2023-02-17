@@ -22,6 +22,12 @@ public class SetGyroHeadingCommand extends CommandBase {
     }
 
     @Override
+    public boolean runsWhenDisabled() {
+        // Allow the gyro heading to be set when the robot is disabled
+        return true;
+    }
+
+    @Override
     public void initialize() {
 
         System.out.println("Set the current heading to " + heading);

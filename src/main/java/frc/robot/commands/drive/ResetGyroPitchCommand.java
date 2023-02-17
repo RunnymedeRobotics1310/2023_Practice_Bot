@@ -19,12 +19,19 @@ public class ResetGyroPitchCommand extends CommandBase {
     }
 
     @Override
+    public boolean runsWhenDisabled() {
+        // Allow the pitch to be reset when disabled
+        return true;
+    }
+
+    @Override
     public void initialize() {
 
         System.out.println("Reset the gyro pitch to zero");
 
         driveSubsystem.setGyroPitch(0);
     }
+
 
     @Override
     public boolean isFinished() {
