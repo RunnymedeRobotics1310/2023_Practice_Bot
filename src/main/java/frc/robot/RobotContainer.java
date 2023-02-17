@@ -17,11 +17,13 @@ import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.OiConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.AutonomousCommand;
+import frc.robot.commands.drive.BalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
 import frc.robot.commands.drive.DriveModeSelector;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.commands.drive.ResetGyroPitchCommand;
 import frc.robot.commands.drive.SetGyroHeadingCommand;
+import frc.robot.commands.drive.SwitchVisionTargetCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -168,6 +170,12 @@ public class RobotContainer {
 
         new Trigger(() -> (driverController.getPOV() == 270))
             .onTrue(new DriveOnHeadingCommand(270, .5, 400, driveSubsystem));
+
+        new Trigger(() -> (driverController.getLeftBumper()))
+            .onTrue(new SwitchVisionTargetCommand(visionSubsystem));
+
+        new Trigger(() -> (driverController.getAButton())).onTrue(new BalanceCommand(driveSubsystem));
+
 
     }
 

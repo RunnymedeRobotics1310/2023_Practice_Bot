@@ -140,6 +140,10 @@ public class VisionSubsystem extends SubsystemBase {
             // FIXME: Implement a post detection pipe
             break;
 
+        case NONE:
+            System.out.println("Setting vision target type to NONE is not yet supported");
+            break;
+
         default:
             System.out.println("Invalid value used for "
                 + "VisionSubsystem.setVisionTargetType("

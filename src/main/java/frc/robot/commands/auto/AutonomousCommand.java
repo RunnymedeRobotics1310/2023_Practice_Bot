@@ -202,7 +202,6 @@ public class AutonomousCommand extends SequentialCommandGroup {
          */
         if (exitZoneAction == AutoAction.PICK_UP_CUBE) {
             // FIXME: ensure cube is close enough to the robot that the arm can reach it
-            visionSubsystem.setModeCubeAcquisition();
             addCommands(new DriveToTargetCommand(VisionTargetType.CUBE, .2, driveSubsystem, visionSubsystem));
         }
         if (exitZoneAction == AutoAction.PICK_UP_CONE) {
@@ -248,7 +247,6 @@ public class AutonomousCommand extends SequentialCommandGroup {
 
         // Turn around and go back to the grid
         addCommands(new DriveOnHeadingCommand(180.0, 0.5, 400, 3, driveSubsystem));
-        visionSubsystem.setModeAprilTags();
         addCommands(new DriveToTargetCommand(VisionTargetType.TAG, 0.3, driveSubsystem, visionSubsystem));
 
         // Vision subsystem to acquire the nearest scoring position marker (vision subsystem
