@@ -182,7 +182,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void setModeAprilTags() {
-        this.table.getEntry("pipeline").setNumberPIPELINE_APRIL_TAG_DETECT);
+        this.table.getEntry("pipeline").setNumber(PIPELINE_APRIL_TAG_DETECT);
         this.table.getEntry("camMode").setNumber(CAM_MODE_VISION);
         this.table.getEntry("ledMode").setNumber(LED_MODE_PIPELINE);
     }
