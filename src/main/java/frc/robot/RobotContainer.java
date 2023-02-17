@@ -23,7 +23,7 @@ import frc.robot.commands.drive.DriveModeSelector;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.commands.drive.ResetGyroPitchCommand;
 import frc.robot.commands.drive.SetGyroHeadingCommand;
-import frc.robot.commands.drive.SwitchVisionTargetCommand;
+import frc.robot.commands.vision.SwitchVisionTargetCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
