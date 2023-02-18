@@ -1,17 +1,14 @@
 package frc.robot.commands.vision;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.VisionSubsystem.VisionTargetType;
 
-public class SwitchVisionTargetCommand extends CommandBase {
-
-    private final VisionSubsystem  visionSubsystem;
-    private final VisionTargetType visionTargetType;
+public class SwitchVisionTargetCommand extends InstantCommand {
 
     /**
      * Switches the vision target to the next {@link VisionTargetType} enum value
-     * 
+     *
      * @param visionSubsystem
      */
     public SwitchVisionTargetCommand(VisionSubsystem visionSubsystem) {
@@ -21,67 +18,44 @@ public class SwitchVisionTargetCommand extends CommandBase {
 
     /**
      * Switch the vision target to the specified {@link VisionTargetType}.
-     * 
+     *
      * @param visionTargetType requested vision target type
      * @param visionSubsystem
      */
     public SwitchVisionTargetCommand(VisionTargetType visionTargetType, VisionSubsystem visionSubsystem) {
 
-        this.visionTargetType = visionTargetType;
-        this.visionSubsystem  = visionSubsystem;
-    }
+        super(() -> {
 
+            // Print a message to the console
 
-    @Override
-    public void initialize() {
-
-        System.out.print("SwitchVisionTargetCommand");
-        if (visionTargetType != null) {
-            System.out.println(": Switch to vision target " + visionTargetType);
-        }
-        else {
-            System.out.println(": Switch to next value");
-        }
-
-        // If the vision target was passed in, then use that value
-        if (visionTargetType != null) {
-            visionSubsystem.setVisionTargetType(visionTargetType);
-            return;
-        }
-
-        // If the vision target was not passed in, then set the vision target to the
-        // next value in the enum
-
-        VisionTargetType currentTargetType = visionSubsystem.getCurrentVisionTargetType();
-        System.out.println("Current target type is " + currentTargetType);
-
-        // please optimize me
-        // FIXME: @tony... how about...
-        // int idx = currentTargetType.ordinal();
-        // int nextIdx = (idx + 1) % VisionTargetType.values().length;
-        // NOTE: Uses modulo, the if-statement may be clearer for students.
-        int idx = 0;
-        for (int i = 0; i < VisionTargetType.values().length; i++) {
-            if (currentTargetType == VisionTargetType.values()[i]) {
-                System.out.println("Vision target found in array - index is " + i);
-                idx = i;
-                break;
+            System.out.print("SwitchVisionTargetCommand");
+            if (visionTargetType != null) {
+                System.out.println(": Switch to vision target " + visionTargetType);
             }
-        }
+            else {
+                System.out.println(": Switch to next value");
+            }
 
-        int nextIdx = idx++;
-        if (nextIdx == VisionTargetType.values().length) {
-            nextIdx = 0;
-        }
+            // If the vision target was passed in, then use that value
 
-        VisionTargetType nextVisionTargetType = VisionTargetType.values()[nextIdx];
-        System.out.println("Setting vision target type to " + nextVisionTargetType);
+            if (visionTargetType != null) {
+                visionSubsystem.setVisionTargetType(visionTargetType);
+                return;
+            }
 
-        visionSubsystem.setVisionTargetType(nextVisionTargetType);
-    }
+            // If the vision target was not passed in, then set the vision target to the
+            // next value in the enum
 
-    @Override
-    public boolean isFinished() {
-        return true;
+            VisionTargetType currentTargetType = visionSubsystem.getCurrentVisionTargetType();
+            System.out.println("Current target type is " + currentTargetType);
+
+            int idx = currentTargetType.ordinal();
+            int nextIdx = (idx + 1) % VisionTargetType.values().length;
+
+            VisionTargetType nextVisionTargetType = VisionTargetType.values()[nextIdx];
+            System.out.println("Setting vision target type to " + nextVisionTargetType);
+
+            visionSubsystem.setVisionTargetType(nextVisionTargetType);
+        });
     }
 }
