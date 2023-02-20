@@ -110,8 +110,7 @@ public class DefaultDriveCommand extends CommandBase {
     private void setMotorSpeedsArcade() {
 
         // TODO: Filtering of joystick values to handle the deadband should be done in a
-        // joystick
-        // class
+        // gamecontroller class
         /** see {@link RunnymedeGameController}. */
 
         // Filter out low input values to reduce drivetrain drift
@@ -131,6 +130,10 @@ public class DefaultDriveCommand extends CommandBase {
 
     private void setMotorSpeedsTank() {
 
+        // TODO: Filtering of joystick values to handle the deadband should be done in a
+        // gamecontroller class
+        /** see {@link RunnymedeGameController}. */
+
         double leftSpeed  = getScaledValue(-driverController.getLeftY());
         double rightSpeed = getScaledValue(-driverController.getRightY());
 
@@ -144,6 +147,10 @@ public class DefaultDriveCommand extends CommandBase {
     }
 
     private void setMotorSpeedsQuentin() {
+
+        // TODO: Filtering of joystick values to handle the deadband should be done in a
+        // gamecontroller class
+        /** see {@link RunnymedeGameController}. */
 
         double  speed = getScaledValue(-driverController.getLeftY());
         double  turn  = getScaledValue(driverController.getRightX()) / 2;
