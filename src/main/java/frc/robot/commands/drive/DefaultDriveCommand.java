@@ -48,39 +48,18 @@ public class DefaultDriveCommand extends CommandBase {
 
         DriveMode driveMode = driveModeSelector.getDriveMode();
 
-        double    speed     = 0, turn = 0;
-
         switch (driveMode) {
-
         case ARCADE:
-            // FIXME: We could use Quentin for single stick arcade by
-            // passing in the appropriate speed and turn values from
-            // the different sticks
             setMotorSpeedsArcade();
             break;
-
         case TANK:
             setMotorSpeedsTank();
             break;
-
-        case DUAL_STICK_ARCADE:
-
-            // Left Y is speed, right X is turn
-            speed = getScaledValue(-driverController.getLeftY());
-            turn = getScaledValue(driverController.getRightX()) / 2;
-
-            setMotorSpeedsDualStickArcade(speed, turn);
+        case QUENTIN:
+            setMotorSpeedsQuentin();
             break;
-
-        case QUENTIN: // Quentin is the default drive mode.
         default:
-
-            // Left Y is speed, right X is turn
-            speed = getScaledValue(-driverController.getLeftY());
-            turn = getScaledValue(driverController.getRightX()) / 2;
-
-            setMotorSpeedsQuentin(speed, turn);
-
+            setMotorSpeedsQuentin();
             break;
         }
 
@@ -131,8 +110,7 @@ public class DefaultDriveCommand extends CommandBase {
     private void setMotorSpeedsArcade() {
 
         // TODO: Filtering of joystick values to handle the deadband should be done in a
-        // joystick
-        // class
+        // gamecontroller class
         /** see {@link RunnymedeGameController}. */
 
         // Filter out low input values to reduce drivetrain drift
@@ -152,6 +130,10 @@ public class DefaultDriveCommand extends CommandBase {
 
     private void setMotorSpeedsTank() {
 
+        // TODO: Filtering of joystick values to handle the deadband should be done in a
+        // gamecontroller class
+        /** see {@link RunnymedeGameController}. */
+
         double leftSpeed  = getScaledValue(-driverController.getLeftY());
         double rightSpeed = getScaledValue(-driverController.getRightY());
 
@@ -164,8 +146,16 @@ public class DefaultDriveCommand extends CommandBase {
         }
     }
 
-    private void setMotorSpeedsQuentin(double speed, double turn) {
+    private void setMotorSpeedsQuentin() {
 
+        // TODO: Filtering of joystick values to handle the deadband should be done in a
+        // gamecontroller class
+        /** see {@link RunnymedeGameController}. */
+
+        double  speed = getScaledValue(-driverController.getLeftY());
+        double  turn  = getScaledValue(driverController.getRightX()) / 2;
+
+        // FIXME: is there a better variable name than turn2? What is the intention of this variable
         double  turn2 = turn;
         boolean boost = driverController.getRightBumper();
 
@@ -178,7 +168,6 @@ public class DefaultDriveCommand extends CommandBase {
             speed = speed / 2;
         }
         else {
-            // Set the speed as full forward +1.0 or backwards -1.0
             speed = Math.signum(speed);
         }
 
@@ -192,7 +181,17 @@ public class DefaultDriveCommand extends CommandBase {
         }
         else if (boost) {
 
+            // FIXME: what is happening here? why turn2 < 0?
+            // Is there a comment that can explain what is happening?
             if (turn2 < 0) {
+
+                // FIXME: If boosted and at full speed, and the
+                // turn is limited to 0.5, then the max turn
+                // that can be achieved is 1.0 vs 0.5. Do we
+                // not want sharper turns when boosted?
+                // If this is a design feature (not being able
+                // to turn sharply when boosted), then should we put that
+                // on the controller map as well?
                 leftSpeed  = speed + turn;
                 rightSpeed = speed;
             }
@@ -219,78 +218,6 @@ public class DefaultDriveCommand extends CommandBase {
                 leftSpeed  = speed;
             }
         }
-        driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
-    }
-
-    private void setMotorSpeedsDualStickArcade(double speed, double turn) {
-
-        boolean boost     = driverController.getRightBumper();
-
-        double  leftSpeed = 0, rightSpeed = 0, max = 1.0;
-
-        if (!boost) {
-            speed /= 2;
-            turn  /= 2;
-            max   /= 2;
-        }
-
-        // If there is no forward movement, then spin on the spot
-        if (speed == 0) {
-            leftSpeed  = turn;
-            rightSpeed = -turn;
-        }
-        else {
-
-            if (Math.abs(speed) + Math.abs(turn) >= max) {
-
-                // If the speed + turn is less than the max, then apply the turn equally to
-                // the left and right side.
-                leftSpeed  = speed + turn;
-                rightSpeed = speed - turn;
-            }
-            else {
-
-                // If the speed + turn > 1 then we need to limit the one
-                // side of the robot to a speed of 1.0, and maintain the differential
-                // between the two sides (2 * turn).
-
-                if (speed > 0) {
-
-                    // Forward movement
-
-                    if (turn > 0) {
-
-                        leftSpeed  = max;
-                        rightSpeed = max - 2 * turn;
-                    }
-                    else {
-
-                        leftSpeed  = max + 2 * turn; // -ve turn value
-                        rightSpeed = max;
-                    }
-
-                }
-
-                else {
-
-                    // Backwards movement
-
-                    if (turn > 0) {
-
-                        leftSpeed  = -max + 2 * turn;
-                        rightSpeed = -max;
-                    }
-                    else {
-
-                        leftSpeed  = -max;
-                        rightSpeed = -max - 2 * turn; // -ve turn value
-
-                    }
-                }
-            }
-        }
-
-        // Apply the calculated speed to the motors
         driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
     }
 
