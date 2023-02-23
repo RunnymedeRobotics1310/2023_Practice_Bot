@@ -8,12 +8,13 @@ import frc.robot.subsystems.DriveSubsystem;
 public class BalanceCommand extends CommandBase {
 
     private final DriveSubsystem driveSubsystem;
-    long                         startTime = 0;
+    long                         startTime     = 0;
 
     // Track the gyro pitch.
-    double                       pitch     = 0;
-    double                       pitchRate = 0;
-    double                       speed     = 0;
+    double                       pitch         = 0;
+    double                       pitchRate     = 0;
+    double                       speed         = 0;
+    long                         prevLevelTime = 0;
 
     /**
      * Drive on a specified compass heading (0-360 degrees) for the specified distance in cm.
@@ -48,14 +49,15 @@ public class BalanceCommand extends CommandBase {
         // speed = 0;
         // }
         if (pitch > 1) {
-            speed = .15;
+            speed = .05;
         }
         else if (pitch < -1) {
-            speed = -.15;
+            speed = -.05;
         }
         else {
             speed = 0;
         }
+        speed = speed + pitch / 100;
 
         driveSubsystem.setMotorSpeeds(speed, speed);
 
@@ -64,20 +66,42 @@ public class BalanceCommand extends CommandBase {
     @Override
     public boolean isFinished() {
 
+        final double threshold        = 2;
+        final long   levelAfterMillis = 350;
+
+        // Timeout
+        if (System.currentTimeMillis() - startTime > 10000) {
+            return true;
+        }
         // Track the gyro pitch.
         pitch     = driveSubsystem.getPitch();
         pitchRate = driveSubsystem.getPitchRate();
 
         // FIXME: Only finish when it has been still for a couple of seconds. Instantaneous 0 is too
         // soon, because the charger may be in the middle of passing through 0 while rocking.
-        if (pitch < 0.5 && pitch > -0.5) {
-            return true;
-        }
-        if (System.currentTimeMillis() - startTime > 10000) {
-            return true;
-        }
-        return false;
 
+        // Not level
+        if (Math.abs(pitch) > threshold) {
+            prevLevelTime = -1;
+            return false;
+        }
+        // it's level!
+
+        // first time?
+        if (prevLevelTime == -1) {
+            // yes - track time
+            prevLevelTime = System.currentTimeMillis();
+        }
+        else {
+            // it's already level - nothing to do.
+        }
+
+        if (System.currentTimeMillis() - prevLevelTime > levelAfterMillis) {
+            // It's been level long enough!
+            return true;
+        }
+        // Keep trying
+        return false;
     }
 
     @Override
