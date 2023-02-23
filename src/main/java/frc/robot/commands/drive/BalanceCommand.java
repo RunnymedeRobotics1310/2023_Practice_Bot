@@ -44,20 +44,18 @@ public class BalanceCommand extends CommandBase {
         pitch     = driveSubsystem.getPitch();
         pitchRate = driveSubsystem.getPitchRate();
 
-
-        // if (Math.abs(pitchRate) > 1) {
-        // speed = 0;
-        // }
         if (pitch > 1) {
-            speed = .05;
+            speed = .0375;
         }
         else if (pitch < -1) {
-            speed = -.05;
+            speed = -.0375;
         }
         else {
             speed = 0;
         }
-        speed = speed + pitch / 100;
+
+        // Feed forward balance \/
+        speed = speed + pitch / 130;
 
         driveSubsystem.setMotorSpeeds(speed, speed);
 
