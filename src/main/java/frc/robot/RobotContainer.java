@@ -23,6 +23,7 @@ import frc.robot.commands.drive.DriveModeSelector;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.commands.drive.ResetGyroPitchCommand;
 import frc.robot.commands.drive.SetGyroHeadingCommand;
+import frc.robot.commands.operator.RunnymedeGameController;
 import frc.robot.commands.vision.SwitchVisionTargetCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -53,7 +54,8 @@ public class RobotContainer {
     private final DriveModeSelector driveModeSelector             = new DriveModeSelector();
 
     // The driver's controller
-    private final XboxController    driverController              = new XboxController(OiConstants.DRIVER_CONTROLLER_PORT);
+    private final XboxController    driverController              = new RunnymedeGameController(
+        OiConstants.DRIVER_CONTROLLER_PORT);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.

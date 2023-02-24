@@ -85,9 +85,11 @@ public class DefaultDriveCommand extends CommandBase {
         // while held. When the bumper is released, the joysticks will take over again.
         // Hopefully that is the intended design.
         //
-        if (driverController.getLeftBumper()) {
-            driveSubsystem.setMotorSpeeds(0, 0);
-        }
+        // Can delete if we don't need a deadstop
+        // Otherwise must be fixed
+        // if (driverController.getLeftBumper()) {
+        // driveSubsystem.setMotorSpeeds(0, 0);
+        // }
     }
 
     // Returns true when the command should end.
@@ -109,13 +111,9 @@ public class DefaultDriveCommand extends CommandBase {
 
     private void setMotorSpeedsArcade() {
 
-        // TODO: Filtering of joystick values to handle the deadband should be done in a
-        // gamecontroller class
-        /** see {@link RunnymedeGameController}. */
-
         // Filter out low input values to reduce drivetrain drift
-        double leftY      = getScaledValue(driverController.getLeftY());
-        double leftX      = getScaledValue(driverController.getLeftX());
+        double leftY      = driverController.getRawAxis(1);
+        double leftX      = driverController.getRawAxis(0);
         double leftSpeed  = leftY * -1 + leftX;
         double rightSpeed = leftY * -1 - leftX;
 
@@ -130,12 +128,8 @@ public class DefaultDriveCommand extends CommandBase {
 
     private void setMotorSpeedsTank() {
 
-        // TODO: Filtering of joystick values to handle the deadband should be done in a
-        // gamecontroller class
-        /** see {@link RunnymedeGameController}. */
-
-        double leftSpeed  = getScaledValue(-driverController.getLeftY());
-        double rightSpeed = getScaledValue(-driverController.getRightY());
+        double leftSpeed  = driverController.getRawAxis(1);
+        double rightSpeed = driverController.getRawAxis(5);
 
         // Boost
         if (driverController.getRightBumper()) {
@@ -146,23 +140,23 @@ public class DefaultDriveCommand extends CommandBase {
         }
     }
 
+    private static final int AXIS_LEFT_Y  = 1;
+    private static final int AXIS_RIGHT_X = 4;
+
     private void setMotorSpeedsQuentin() {
 
-        // TODO: Filtering of joystick values to handle the deadband should be done in a
-        // gamecontroller class
-        /** see {@link RunnymedeGameController}. */
-
-        double  speed = getScaledValue(-driverController.getLeftY());
-        double  turn  = getScaledValue(driverController.getRightX()) / 2;
-
-        // FIXME: is there a better variable name than turn2? What is the intention of this variable
-        double  turn2 = turn;
-        boolean boost = driverController.getRightBumper();
+        // forwards/backwards speed
+        double       speed   = driverController.getRawAxis(AXIS_LEFT_Y);
+        // turn speed
+        final double rawTurn = driverController.getRawAxis(AXIS_RIGHT_X);
 
         SmartDashboard.putNumber("Speed", speed);
-        SmartDashboard.putNumber("Turn", turn);
+        SmartDashboard.putNumber("Turn", rawTurn);
 
-        double leftSpeed = 0, rightSpeed = 0;
+        double  turn      = rawTurn / 2;
+        boolean boost     = driverController.getRightBumper();
+
+        double  leftSpeed = 0, rightSpeed = 0;
 
         if (!boost) {
             speed = speed / 2;
@@ -181,21 +175,17 @@ public class DefaultDriveCommand extends CommandBase {
         }
         else if (boost) {
 
-            // FIXME: what is happening here? why turn2 < 0?
-            // Is there a comment that can explain what is happening?
-            if (turn2 < 0) {
+            // Turning left
+            if (rawTurn < 0) {
 
-                // FIXME: If boosted and at full speed, and the
+                // If boosted and at full speed, and the
                 // turn is limited to 0.5, then the max turn
-                // that can be achieved is 1.0 vs 0.5. Do we
-                // not want sharper turns when boosted?
-                // If this is a design feature (not being able
-                // to turn sharply when boosted), then should we put that
-                // on the controller map as well?
+                // that can be achieved is 1.0 vs 0.5.
                 leftSpeed  = speed + turn;
                 rightSpeed = speed;
             }
-            else if (turn2 > 0) {
+            // Turning right
+            else if (rawTurn > 0) {
                 leftSpeed  = speed;
                 rightSpeed = speed - turn;
             }
@@ -205,11 +195,11 @@ public class DefaultDriveCommand extends CommandBase {
             }
         }
         else {
-            if (turn2 < 0) {
+            if (rawTurn < 0) {
                 leftSpeed  = speed;
                 rightSpeed = speed - turn;
             }
-            else if (turn2 > 0) {
+            else if (rawTurn > 0) {
                 leftSpeed  = speed + turn;
                 rightSpeed = speed;
             }
@@ -219,17 +209,5 @@ public class DefaultDriveCommand extends CommandBase {
             }
         }
         driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
-    }
-
-    private static double getScaledValue(double value) {
-
-        if (Math.abs(value) < DRIVE_FILTER_VALUE) {
-            value = 0;
-        }
-        else {
-            // Scale the range of [0.2-1.0] to [0.0-1.0];
-            value = ((Math.abs(value) - DRIVE_FILTER_VALUE) / (1 - DRIVE_FILTER_VALUE)) * Math.signum(value);
-        }
-        return value;
     }
 }
