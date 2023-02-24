@@ -114,8 +114,8 @@ public class DefaultDriveCommand extends CommandBase {
         // Filter out low input values to reduce drivetrain drift
         double leftY      = driverController.getRawAxis(1);
         double leftX      = driverController.getRawAxis(0);
-        double leftSpeed  = leftY * -1 + leftX;
-        double rightSpeed = leftY * -1 - leftX;
+        double leftSpeed  = leftY + leftX / (leftY == 0 ? 1 : 2); // less sensitive when moving
+        double rightSpeed = leftY - leftX / (leftY == 0 ? 1 : 2);
 
         // Boost
         if (driverController.getRightBumper()) {
