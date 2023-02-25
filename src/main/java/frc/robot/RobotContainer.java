@@ -54,7 +54,7 @@ public class RobotContainer {
     private final DriveModeSelector driveModeSelector             = new DriveModeSelector();
 
     // The driver's controller
-    private final XboxController    driverController              = new RunnymedeGameController(
+    private final RunnymedeGameController    driverController              = new RunnymedeGameController(
         OiConstants.DRIVER_CONTROLLER_PORT);
 
     /**
@@ -64,7 +64,7 @@ public class RobotContainer {
 
         // Initialize all Subsystem default commands.
         driveSubsystem
-            .setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector, visionSubsystem));
+            .setDefaultCommand(new DefaultDriveCommand(driverController, driveSubsystem, driveModeSelector));
 
         // calibrate subsystems
         calibrateVision();
