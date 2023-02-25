@@ -293,7 +293,7 @@ public class AutonomousCommand extends SequentialCommandGroup {
         }
         else {
             System.out.println("Balance 'else'");
-            addCommands(new DriveOnHeadingCommand(180, -.3, 400, 1.25, driveSubsystem));
+            addCommands(new DriveOnHeadingCommand(180, -.3, 400, 1.75, driveSubsystem));
         }
 
         // Balance on the platform
