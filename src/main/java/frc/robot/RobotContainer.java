@@ -17,12 +17,7 @@ import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.OiConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.AutonomousCommand;
-import frc.robot.commands.drive.BalanceCommand;
-import frc.robot.commands.drive.DefaultDriveCommand;
-import frc.robot.commands.drive.DriveModeSelector;
-import frc.robot.commands.drive.DriveOnHeadingCommand;
-import frc.robot.commands.drive.ResetGyroPitchCommand;
-import frc.robot.commands.drive.SetGyroHeadingCommand;
+import frc.robot.commands.drive.*;
 import frc.robot.commands.operator.RunnymedeGameController;
 import frc.robot.commands.vision.SwitchVisionTargetCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -178,6 +173,11 @@ public class RobotContainer {
 
         new Trigger(() -> (driverController.getAButton()))
             .onTrue(new BalanceCommand(driveSubsystem));
+
+        new Trigger(() -> driverController.getBButton()).onTrue(new DriveFastOnHeadingCommand(0, DriveFastOnHeadingCommand.Direction.forward, 50, false, driveSubsystem));
+        new Trigger(() -> driverController.getXButton()).onTrue(new DriveFastOnHeadingCommand(0, DriveFastOnHeadingCommand.Direction.forward, 250, false, driveSubsystem));
+        new Trigger(() -> driverController.getYButton()).onTrue(new DriveFastOnHeadingCommand(0, DriveFastOnHeadingCommand.Direction.forward, 350, false, driveSubsystem));
+
     }
 
     /**
