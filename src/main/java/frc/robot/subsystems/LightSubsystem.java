@@ -1,47 +1,53 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LightSubsystem extends SubsystemBase {
 
-    AddressableLED       ledStrip       = new AddressableLED(0);
-    AddressableLEDBuffer ledStripBuffer = new AddressableLEDBuffer(100);
+    private static final int LIGHT_STRIP_LENGTH = 150;
+    AddressableLED           ledStrip           = new AddressableLED(0);
+    List<int[]>              lights             = new ArrayList<>();
 
     public LightSubsystem() {
-        System.out.println("Initializing LightSubsystem with ledStripBuffer of length " + ledStripBuffer.getLength());
+        System.out.println("Initializing LightSubsystem with ledStripBuffer of length " + LIGHT_STRIP_LENGTH);
 
         // Length is expensive to set, so only set it once, then just update data
-        ledStrip.setLength(ledStripBuffer.getLength());
+        ledStrip.setLength(LIGHT_STRIP_LENGTH);
 
         // Set the data
-        ledStrip.setData(ledStripBuffer);
+        ledStrip.setData(new AddressableLEDBuffer(LIGHT_STRIP_LENGTH));
         ledStrip.start();
     }
 
+    private static final int[] OFF = { 0, 0, 0 };
+
     public void off() {
-        setAllToColor(0, 0, 0);
-    }
-
-    private void setAllToColor(int R, int G, int B) {
-
-        for (var i = 0; i < ledStripBuffer.getLength(); i++) {
-            // Sets the specified LED to the RGB values for red
-            ledStripBuffer.setRGB(i, R, G, B);
+        for (int i = 0; i < LIGHT_STRIP_LENGTH; i++) {
+            lights.set(i, OFF);
         }
-        ledStrip.setData(ledStripBuffer);
-
-
-
+        setLights();
     }
 
     public void setPattern(int sectionStart, int[][] pattern) {
         for (int i = 0; i < pattern.length; i++) {
             int[] light = pattern[i];
-            ledStripBuffer.setRGB(sectionStart + i, light[0], light[1], light[2]);
+            lights.set(i, light);
         }
-        ledStrip.setData(ledStripBuffer);
+        setLights();
+    }
+
+    private void setLights() {
+        AddressableLEDBuffer buffer = new AddressableLEDBuffer(LIGHT_STRIP_LENGTH);
+        for (int i = 0; i < lights.size(); i++) {
+            int[] light = lights.get(i);
+            buffer.setRGB(i, light[0], light[1], light[2]);
+        }
+        ledStrip.setData(buffer);
     }
 
 

@@ -18,7 +18,7 @@ public class SetAllOrangeCommand extends CommandBase {
     @Override
     public void initialize() {
 
-        lightSubsystem.setPattern(5, LightPatterns.createSolidPattern(8, LightPatterns.orange));
+        lightSubsystem.setPattern(0, LightPatterns.createSolidPattern(149, LightPatterns.orange));
     }
 
     @Override

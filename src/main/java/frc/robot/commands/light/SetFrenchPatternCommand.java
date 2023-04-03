@@ -18,9 +18,10 @@ public class SetFrenchPatternCommand extends CommandBase {
     @Override
     public void initialize() {
 
-        for (int light = 0; light < 50; light += LightPatterns.french.length) {
-            lightSubsystem.setPattern(light, LightPatterns.french);
-        }
+        // for (int light = 0; light < 50; light += LightPatterns.french.length) {
+        lightSubsystem.setPattern(/* light */ 0, LightPatterns.french);
+
+        // }
     }
 
     @Override
