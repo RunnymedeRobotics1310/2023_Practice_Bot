@@ -17,10 +17,19 @@ import frc.robot.Constants.GameConstants.GamePiece;
 import frc.robot.Constants.OiConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.AutonomousCommand;
-import frc.robot.commands.drive.*;
+import frc.robot.commands.drive.BalanceCommand;
+import frc.robot.commands.drive.DefaultDriveCommand;
+import frc.robot.commands.drive.DriveFastOnHeadingCommand;
+import frc.robot.commands.drive.DriveModeSelector;
+import frc.robot.commands.drive.DriveOnHeadingCommand;
+import frc.robot.commands.drive.ResetGyroPitchCommand;
+import frc.robot.commands.drive.SetGyroHeadingCommand;
+import frc.robot.commands.light.SetAllOrangeCommand;
+import frc.robot.commands.light.SetFrenchPatternCommand;
 import frc.robot.commands.operator.RunnymedeGameController;
 import frc.robot.commands.vision.SwitchVisionTargetCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LightSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /**
@@ -35,6 +44,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DriveSubsystem          driveSubsystem                = new DriveSubsystem();
     private final VisionSubsystem         visionSubsystem               = new VisionSubsystem();
+    private final LightSubsystem          lightSubsystem                = new LightSubsystem();
 
     // A set of choosers for autonomous patterns
     SendableChooser<AutoLane>             startingLaneChooser           = new SendableChooser<>();
@@ -174,9 +184,15 @@ public class RobotContainer {
         new Trigger(() -> (driverController.getAButton()))
             .onTrue(new BalanceCommand(driveSubsystem));
 
-        new Trigger(() -> driverController.getBButton()).onTrue(new DriveFastOnHeadingCommand(0, DriveFastOnHeadingCommand.Direction.forward, 50, false, driveSubsystem));
-        new Trigger(() -> driverController.getXButton()).onTrue(new DriveFastOnHeadingCommand(0, DriveFastOnHeadingCommand.Direction.forward, 250, false, driveSubsystem));
-        new Trigger(() -> driverController.getYButton()).onTrue(new DriveFastOnHeadingCommand(0, DriveFastOnHeadingCommand.Direction.forward, 350, false, driveSubsystem));
+        new Trigger(() -> driverController.getYButton())
+            .onTrue(new DriveFastOnHeadingCommand(0, DriveFastOnHeadingCommand.Direction.forward, 350, false, driveSubsystem));
+
+        new Trigger(() -> driverController.getBButton())
+            .whileTrue(new SetAllOrangeCommand(lightSubsystem));
+
+        new Trigger(() -> driverController.getXButton())
+            .whileTrue(new SetFrenchPatternCommand(lightSubsystem));
+
 
     }
 
