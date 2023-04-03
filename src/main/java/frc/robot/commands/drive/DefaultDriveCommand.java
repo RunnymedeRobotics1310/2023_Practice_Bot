@@ -3,7 +3,6 @@ package frc.robot.commands.drive;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.DriveConstants.DriveMode;
 import frc.robot.commands.operator.RunnymedeGameController;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -35,81 +34,12 @@ public class DefaultDriveCommand extends CommandBase {
         System.out.println("DefaultDriveCommand started.");
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-
-        DriveMode driveMode = driveModeSelector.getDriveMode();
-
-        switch (driveMode) {
-        case ARCADE:
-            setMotorSpeedsArcade();
-            break;
-        case TANK:
-            setMotorSpeedsTank();
-            break;
-        case QUENTIN:
-            setMotorSpeedsQuentin();
-            break;
-        default:
-            setMotorSpeedsQuentin();
-            break;
-        }
-
-    }
-
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return false;
-    }
-
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-        if (interrupted) {
-            System.out.println("DefaultDriveCommand interrupted.");
-        }
-        else {
-            System.out.println("DefaultDriveCommand ended.");
-        }
-    }
-
-    private void setMotorSpeedsArcade() {
-
-        // Filter out low input values to reduce drivetrain drift
-        double leftY      = driverController.getRawAxis(1);
-        double leftX      = driverController.getRawAxis(0);
-        double leftSpeed  = leftY + leftX / (leftY == 0 ? 1 : 2); // less sensitive when moving
-        double rightSpeed = leftY - leftX / (leftY == 0 ? 1 : 2);
-
-        // Boost
-        if (driverController.getRightBumper()) {
-            driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
-        }
-        else {
-            driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
-        }
-    }
-
-    private void setMotorSpeedsTank() {
-
-        double leftSpeed  = driverController.getRawAxis(1);
-        double rightSpeed = driverController.getRawAxis(5);
-
-        // Boost
-        if (driverController.getRightBumper()) {
-            driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
-        }
-        else {
-            driveSubsystem.setMotorSpeeds(leftSpeed / 2, rightSpeed / 2);
-        }
-    }
-
     private static final int AXIS_LEFT_Y  = 1;
     private static final int AXIS_RIGHT_X = 4;
 
-    private void setMotorSpeedsQuentin() {
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
 
         // forwards/backwards speed
         double       speed   = driverController.getRawAxis(AXIS_LEFT_Y);
@@ -120,13 +50,20 @@ public class DefaultDriveCommand extends CommandBase {
         SmartDashboard.putNumber("Turn", rawTurn);
 
         double  turn      = rawTurn / 2;
-        boolean boost     = driverController.getRightBumper();
+        boolean boost     = driverController.getLeftBumper();
+        boolean slow      = driverController.getRightBumper();
 
         double  leftSpeed = 0, rightSpeed = 0;
 
-        if (!boost) {
+        if (slow) {
+            speed = speed / 5;
+            turn  = turn / 2.5; // Turn was already divided by 2 above
+        }
+
+        else if (!boost) {
             speed = speed / 2;
         }
+
         else {
             speed = Math.signum(speed);
         }
@@ -175,5 +112,22 @@ public class DefaultDriveCommand extends CommandBase {
             }
         }
         driveSubsystem.setMotorSpeeds(leftSpeed, rightSpeed);
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        if (interrupted) {
+            System.out.println("DefaultDriveCommand interrupted.");
+        }
+        else {
+            System.out.println("DefaultDriveCommand ended.");
+        }
     }
 }
