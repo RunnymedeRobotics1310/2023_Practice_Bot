@@ -1,11 +1,11 @@
 package frc.robot.commands.light;
 
 public class LightPatterns {
-    static int[]   orange = { 255, 50, 0 };
+    static int[]   orange = { 127, 25, 0 };
 
-    static int[]   blue   = { 0, 0, 255 };
-    static int[]   red    = { 255, 0, 0 };
-    static int[]   white  = { 255, 255, 255 };
+    static int[]   blue   = { 0, 0, 127 };
+    static int[]   red    = { 127, 0, 0 };
+    static int[]   white  = { 127, 127, 127 };
     static int[]   black  = { 0, 0, 0 };
 
     static int[][] french = { blue, red, white };
