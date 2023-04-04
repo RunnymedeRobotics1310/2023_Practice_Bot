@@ -1,55 +1,79 @@
 package frc.robot.subsystems;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LightSubsystem extends SubsystemBase {
 
     private static final int LIGHT_STRIP_LENGTH = 150;
-    AddressableLED           ledStrip           = new AddressableLED(0);
-    List<int[]>              lights             = new ArrayList<>();
+    private final AddressableLED ledStrip       = new AddressableLED(0);
+    private final AddressableLEDBuffer buffer;
 
     public LightSubsystem() {
         System.out.println("Initializing LightSubsystem with ledStripBuffer of length " + LIGHT_STRIP_LENGTH);
 
         // Length is expensive to set, so only set it once, then just update data
         ledStrip.setLength(LIGHT_STRIP_LENGTH);
+        buffer = new AddressableLEDBuffer(LIGHT_STRIP_LENGTH);
 
         // Set the data
-        ledStrip.setData(new AddressableLEDBuffer(LIGHT_STRIP_LENGTH));
+        ledStrip.setData(buffer);
         ledStrip.start();
     }
 
-    private static final int[] OFF = { 0, 0, 0 };
-
     public void off() {
         for (int i = 0; i < LIGHT_STRIP_LENGTH; i++) {
-            lights.set(i, OFF);
+            buffer.setLED(i, Color.kBlack);
         }
-        setLights();
+        safelySetLights();
     }
 
-    public void setPattern(int sectionStart, int[][] pattern) {
-        for (int i = 0; i < pattern.length; i++) {
-            int[] light = pattern[i];
-            lights.set(i, light);
+    public void setPattern(int sectionStart, LightPattern pattern) {
+        List<Color> colors = pattern.getLights();
+        for (int i = 0; i < colors.size(); i++) {
+            Color color = colors.get(i);
+            buffer.setLED(sectionStart+i, color);
         }
-        setLights();
+        safelySetLights();
     }
 
-    private void setLights() {
-        AddressableLEDBuffer buffer = new AddressableLEDBuffer(LIGHT_STRIP_LENGTH);
-        for (int i = 0; i < lights.size(); i++) {
-            int[] light = lights.get(i);
-            buffer.setRGB(i, light[0], light[1], light[2]);
+    private void safelySetLights() {
+
+        /*
+         * To stay within the RIO bounds, we would need to
+         * draw < 2A or 12W total power for the LEDs the way
+         * they are configured.
+         *
+         * The lights probably draw about 20mA/colour
+         * @ full on, so RED=20mA, BLUE=20mA, WHITE=60mA.
+         * Less if the LEDs are dimly lit.  Single colour,
+         * we can safely light 100 LEDs, Full white, about 33 LEDs.
+         */
+        double MAX_MILLIAMPS = 2000;
+        double milliamps = 0;
+        for (int i = 0; i < buffer.getLength(); i++) {
+            Color color = buffer.getLED(i);
+            milliamps += color.red * 20;
+            milliamps += color.blue * 20;
+            milliamps += color.green * 20;
+        }
+        if (milliamps > MAX_MILLIAMPS) {
+            double reductionFactor = MAX_MILLIAMPS/milliamps;
+
+            for (int i = 0; i < buffer.getLength(); i++) {
+                Color color = buffer.getLED(i);
+                double r = color.red * reductionFactor;
+                double g = color.green * reductionFactor;
+                double b = color.blue * reductionFactor;
+                Color dimmerColor = new Color(Math.max(0,r), Math.max(0,g), Math.max(0,b));
+                buffer.setLED(i, dimmerColor);
+            }
         }
         ledStrip.setData(buffer);
     }
-
-
 }
 
