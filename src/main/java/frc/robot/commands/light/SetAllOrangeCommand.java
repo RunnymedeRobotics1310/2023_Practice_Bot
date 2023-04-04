@@ -1,5 +1,6 @@
 package frc.robot.commands.light;
 
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LightSubsystem;
 
@@ -18,7 +19,7 @@ public class SetAllOrangeCommand extends CommandBase {
     @Override
     public void initialize() {
 
-        lightSubsystem.setPattern(0, LightPatterns.createSolidPattern(149, LightPatterns.orange));
+        lightSubsystem.setPattern(0, Patterns.createSolidPattern(149, Color.kOrange));
     }
 
     @Override
