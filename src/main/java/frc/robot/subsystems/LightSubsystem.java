@@ -54,26 +54,44 @@ public class LightSubsystem extends SubsystemBase {
          * we can safely light 100 LEDs, Full white, about 33 LEDs.
          */
         double MAX_MILLIAMPS = 2000;
-        double milliamps = 0;
-        for (int i = 0; i < buffer.getLength(); i++) {
-            Color color = buffer.getLED(i);
-            milliamps += color.red * 20;
-            milliamps += color.blue * 20;
-            milliamps += color.green * 20;
-        }
-        if (milliamps > MAX_MILLIAMPS) {
-            double reductionFactor = MAX_MILLIAMPS/milliamps;
 
-            for (int i = 0; i < buffer.getLength(); i++) {
-                Color color = buffer.getLED(i);
-                double r = color.red * reductionFactor;
-                double g = color.green * reductionFactor;
-                double b = color.blue * reductionFactor;
-                Color dimmerColor = new Color(Math.max(0,r), Math.max(0,g), Math.max(0,b));
-                buffer.setLED(i, dimmerColor);
+        // don't destroy the desired levels by overwriting buffer
+        AddressableLEDBuffer dimmedBuffer = null;
+
+        double ratio;
+        do {
+            AddressableLEDBuffer workingBuffer = dimmedBuffer == null ? buffer : dimmedBuffer;
+            double milliamps = 0;
+            for (int i = 0; i < workingBuffer.getLength(); i++) {
+                Color color = workingBuffer.getLED(i);
+                milliamps += color.red * 20;
+                milliamps += color.blue * 20;
+                milliamps += color.green * 20;
             }
+            ratio = milliamps/MAX_MILLIAMPS;
+            if (ratio >= 1) {
+                if (dimmedBuffer == null) {
+                    dimmedBuffer = new AddressableLEDBuffer(buffer.getLength());
+                }
+                for (int i = 0; i < workingBuffer.getLength(); i++) {
+                    Color color = workingBuffer.getLED(i);
+                    double r = color.red / ratio;
+                    double g = color.green / ratio;
+                    double b = color.blue / ratio;
+                    Color dimmerColor = new Color(Math.max(0, r), Math.max(0, g), Math.max(0, b));
+                    dimmedBuffer.setLED(i, dimmerColor);
+                }
+            }
+
+        } while (ratio > 1);
+
+
+        if (dimmedBuffer != null) {
+            System.out.println("Dimming lights to reduce current draw");
+            ledStrip.setData(dimmedBuffer);
+        } else {
+            ledStrip.setData(buffer);
         }
-        ledStrip.setData(buffer);
     }
 }
 
