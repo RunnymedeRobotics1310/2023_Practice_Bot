@@ -19,13 +19,13 @@ import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.AutonomousCommand;
 import frc.robot.commands.drive.BalanceCommand;
 import frc.robot.commands.drive.DefaultDriveCommand;
-import frc.robot.commands.drive.DriveFastOnHeadingCommand;
 import frc.robot.commands.drive.DriveModeSelector;
 import frc.robot.commands.drive.DriveOnHeadingCommand;
 import frc.robot.commands.drive.ResetGyroPitchCommand;
 import frc.robot.commands.drive.SetGyroHeadingCommand;
 import frc.robot.commands.light.SetAllOrangeCommand;
 import frc.robot.commands.light.SetFrenchPatternCommand;
+import frc.robot.commands.light.SetHoldingConeLightsCommand;
 import frc.robot.commands.operator.RunnymedeGameController;
 import frc.robot.commands.vision.SwitchVisionTargetCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -185,7 +185,7 @@ public class RobotContainer {
             .onTrue(new BalanceCommand(driveSubsystem));
 
         new Trigger(() -> driverController.getYButton())
-            .onTrue(new DriveFastOnHeadingCommand(0, DriveFastOnHeadingCommand.Direction.forward, 350, false, driveSubsystem));
+            .onTrue(new SetHoldingConeLightsCommand(lightSubsystem));
 
         new Trigger(() -> driverController.getBButton())
             .whileTrue(new SetAllOrangeCommand(lightSubsystem));
